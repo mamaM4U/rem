@@ -1,0 +1,14 @@
+name: shared
+description: Shared code between arona and plana
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+
+resolution: workspace
+
+dependencies: {}
+
+dev_dependencies:
+  test: ^1.25.5
