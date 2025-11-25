@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:requests_inspector/requests_inspector.dart';
 import 'package:arona/env/env.dart';
 import 'package:arona/helpers/utils/logging_interceptor.dart';
 
@@ -16,7 +17,10 @@ class Api {
       baseUrl: Env.API_URL,
       connectTimeout: const Duration(seconds: 10),
     ));
-    dio.interceptors.addAll([LoggingInterceptor()]);
+    dio.interceptors.addAll([
+      RequestsInspectorInterceptor(),
+      LoggingInterceptor(),
+    ]);
 
     return dio;
   }
