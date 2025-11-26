@@ -70,52 +70,51 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _loadHomeData,
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 120,
-                pinned: true,
-                elevation: 0,
-                backgroundColor: Colors.white,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-                  title: const Text(
-                    'Discover',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                    ),
+      body: RefreshIndicator(
+        onRefresh: _loadHomeData,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 140,
+              pinned: true,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+                title: const Text(
+                  'Discover',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
                   ),
                 ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: IconButton(
-                      icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.person_outline,
-                          color: Colors.blue,
-                          size: 24,
-                        ),
-                      ),
-                      onPressed: _handleProfileOrLogin,
-                      tooltip: 'Profile',
-                    ),
-                  ),
-                ],
               ),
-              _buildSliverBody(),
-            ],
-          ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.person_outline,
+                        color: Colors.blue,
+                        size: 24,
+                      ),
+                    ),
+                    onPressed: _handleProfileOrLogin,
+                    tooltip: 'Profile',
+                  ),
+                ),
+              ],
+            ),
+            _buildSliverBody(),
+          ],
         ),
       ),
     );
