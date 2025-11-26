@@ -45,37 +45,65 @@ cp .env.example .env
 
 ## Development
 
-### Run App
+### Quick Start
+
+1. Start Plana with database:
 ```bash
-melos run run:app
+melos plana:docker:up
 ```
 
-### Run API Server
+1. Run Plana only:
 ```bash
-melos run run:server
+melos plana
 ```
 
-### Code Generation
+1. Run Flutter app (in separate terminal):
 ```bash
-# Run build_runner in all packages
-melos run build:runner
+melos arona
 ```
 
 ## Melos Commands
 
-### Development
-- `melos run run:app` - Run Flutter app
-- `melos run run:server` - Run Dart Frog server
-- `melos run get` - Get dependencies for all packages
+### Application
+- `melos arona` - Run Flutter app (arona)
+- `melos plana` - Run Dart Frog server (plana)
+
+### Docker (Plana With Database)
+- `melos plana:docker:up` - Start containers
+- `melos plana:docker:down` - Stop and remove containers
+- `melos plana:docker:logs` - View container logs (follow mode)
+- `melos plana:docker:restart` - Restart containers
+
+### Dependencies
+- `melos bootstrap` - Initialize workspace and get all dependencies
+- `melos get` - Get dependencies for all packages
 
 ### Code Quality
-- `melos run analyze` - Analyze all packages
-- `melos run format` - Format all files
-- `melos run test` - Run tests
+- `melos analyze` - Run dart analyze in all packages
+- `melos format` - Format all Dart files
+- `melos test` - Run tests in all packages
 
-### Build
-- `melos run build:runner` - Run build_runner for code generation
-- `melos run clean` - Clean all packages
+### Build & Generation
+- `melos build:runner` - Run build_runner for code generation (envied, json_serializable)
+- `melos clean` - Clean all Flutter packages
+
+### Typical Development Workflow
+
+```bash
+# Initial setup
+melos bootstrap
+
+# Start development
+melos plana:docker:up      # Start database
+melos plana                # Start API server (terminal 1)
+melos arona                # Start Flutter app (terminal 2)
+
+# View logs
+melos plana:docker:logs    # View database logs
+
+# Cleanup
+melos plana:docker:down    # Stop database
+```
 
 ## Tech Stack
 

@@ -53,15 +53,40 @@ melos:
       description: Get dependencies for all packages
 
     # Run Flutter app
-    run:app:
+    arona:
       exec: flutter run
       packageFilters:
         scope: arona
       description: Run the Flutter app
 
     # Run Dart Frog server
-    run:server:
+    plana:
       exec: dart_frog dev
       packageFilters:
         scope: plana
       description: Run the Dart Frog server
+
+    # Docker commands for Plana
+    plana:docker:up:
+      exec: docker-compose up -d 2>&1
+      packageFilters:
+        scope: plana
+      description: Start Docker containers for Plana (PostgreSQL)
+
+    plana:docker:down:
+      exec: docker-compose down 2>&1
+      packageFilters:
+        scope: plana
+      description: Stop Docker containers for Plana
+
+    plana:docker:logs:
+      exec: docker-compose logs -f
+      packageFilters:
+        scope: plana
+      description: View Docker logs for Plana
+
+    plana:docker:restart:
+      exec: docker-compose restart 2>&1
+      packageFilters:
+        scope: plana
+      description: Restart Docker containers for Plana
