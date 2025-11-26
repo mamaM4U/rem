@@ -1,19 +1,19 @@
 import 'dart:io';
 
 import 'package:postgres/postgres.dart';
+import 'package:plana/env/env.dart';
 
 /// PostgreSQL database connection
 class Database {
-  Database._();
-
-  static Database? _instance;
-  static Connection? _connection;
-
   /// Get database instance
-  static Database get instance {
+  factory Database() {
     _instance ??= Database._();
     return _instance!;
   }
+
+  Database._();
+  static Database? _instance;
+  static Connection? _connection;
 
   /// Get database connection
   Future<Connection> get connection async {
@@ -21,13 +21,16 @@ class Database {
       return _connection!;
     }
 
-    // Load from environment variables
+    // Load from environment variables (with Docker fallback)
     final endpoint = Endpoint(
-      host: Platform.environment['DATABASE_HOST'] ?? 'localhost',
-      port: int.parse(Platform.environment['DATABASE_PORT'] ?? '5432'),
-      database: Platform.environment['DATABASE_NAME'] ?? 'rem_db',
-      username: Platform.environment['DATABASE_USER'] ?? 'postgres',
-      password: Platform.environment['DATABASE_PASSWORD'] ?? 'postgres',
+      host: Platform.environment['DATABASE_HOST'] ?? Env.DATABASE_HOST,
+      port: int.parse(
+        Platform.environment['DATABASE_PORT'] ?? Env.DATABASE_PORT.toString(),
+      ),
+      database: Platform.environment['DATABASE_NAME'] ?? Env.DATABASE_NAME,
+      username: Platform.environment['DATABASE_USER'] ?? Env.DATABASE_USER,
+      password:
+          Platform.environment['DATABASE_PASSWORD'] ?? Env.DATABASE_PASSWORD,
     );
 
     _connection = await Connection.open(
@@ -48,4 +51,4 @@ class Database {
 }
 
 /// Global database instance
-final db = Database.instance;
+final db = Database();

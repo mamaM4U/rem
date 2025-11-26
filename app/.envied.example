@@ -1,1 +1,5 @@
-API_URL=http://localhost:8080
+# API Base URL for Android (use 10.0.2.2 for emulator)
+API_BASE_URL=http://10.0.2.2:8080
+
+# API Base URL for iOS/Web (use localhost)
+API_BASE_URL_IOS=http://localhost:8080

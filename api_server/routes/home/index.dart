@@ -47,7 +47,7 @@ Future<Response> onRequest(RequestContext context) async {
     );
 
     return Response.json(
-      body: successResponse.toJson((data) => data?.toJson() ?? {}),
+      body: successResponse.toJson((data) => data.toJson()),
     );
   } catch (e) {
     final errorResponse = BaseResponse<HomeData>.error(
@@ -55,7 +55,7 @@ Future<Response> onRequest(RequestContext context) async {
     );
     return Response.json(
       statusCode: HttpStatus.internalServerError,
-      body: errorResponse.toJson((data) => data?.toJson()),
+      body: errorResponse.toJson((data) => data.toJson()),
     );
   }
 }

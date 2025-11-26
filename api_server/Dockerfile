@@ -33,6 +33,8 @@ FROM scratch AS runtime
 
 # Bring in the Dart AOT runtime dependencies from the Dart SDK image
 COPY --from=build /runtime/ /
+# Copy CA certificates for HTTPS requests
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /app/bin/server /app/bin/server
 
 # Set working directory

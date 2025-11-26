@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:plana/env/env.dart';
 import 'package:plana/repositories/user_repository.dart';
 import 'package:shared/shared.dart';
 import 'package:validators2/validators2.dart';
@@ -23,7 +24,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+        body: errorResponse.toJson((data) => data.toJson()),
       );
     }
 
@@ -34,7 +35,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+        body: errorResponse.toJson((data) => data.toJson()),
       );
     }
 
@@ -48,7 +49,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
       return Response.json(
         statusCode: HttpStatus.conflict,
-        body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+        body: errorResponse.toJson((data) => data.toJson()),
       );
     }
 
@@ -65,7 +66,7 @@ Future<Response> onRequest(RequestContext context) async {
       'email': user.email,
     });
 
-    final token = jwt.sign(SecretKey('your-secret-key-change-in-production'));
+    final token = jwt.sign(SecretKey(Env.JWT_SECRET));
 
     final authResponse = AuthResponse(
       token: token,
@@ -79,7 +80,7 @@ Future<Response> onRequest(RequestContext context) async {
 
     return Response.json(
       statusCode: HttpStatus.created,
-      body: successResponse.toJson((data) => data?.toJson() ?? {}),
+      body: successResponse.toJson((data) => data.toJson()),
     );
   } catch (e) {
     final errorResponse = BaseResponse<AuthResponse>.error(
@@ -87,7 +88,7 @@ Future<Response> onRequest(RequestContext context) async {
     );
     return Response.json(
       statusCode: HttpStatus.internalServerError,
-      body: errorResponse.toJson((data) => data?.toJson()),
+      body: errorResponse.toJson((data) => data.toJson()),
     );
   }
 }

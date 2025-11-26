@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:plana/env/env.dart';
 import 'package:plana/repositories/user_repository.dart';
 import 'package:shared/shared.dart';
 
@@ -20,7 +21,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
       return Response.json(
         statusCode: HttpStatus.unauthorized,
-        body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+        body: errorResponse.toJson((data) => data.toJson()),
       );
     }
 
@@ -30,7 +31,7 @@ Future<Response> onRequest(RequestContext context) async {
     try {
       final jwt = JWT.verify(
         token,
-        SecretKey('your-secret-key-change-in-production'),
+        SecretKey(Env.JWT_SECRET),
       );
       final payload = jwt.payload as Map<String, dynamic>;
       final email = payload['email'] as String;
@@ -43,7 +44,7 @@ Future<Response> onRequest(RequestContext context) async {
         );
         return Response.json(
           statusCode: HttpStatus.notFound,
-          body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+          body: errorResponse.toJson((data) => data.toJson()),
         );
       }
 
@@ -54,7 +55,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
 
       return Response.json(
-        body: successResponse.toJson((data) => data?.toJson() ?? {}),
+        body: successResponse.toJson((data) => data.toJson()),
       );
     } on JWTExpiredException {
       final errorResponse = BaseResponse<User>.error(
@@ -62,7 +63,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
       return Response.json(
         statusCode: HttpStatus.unauthorized,
-        body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+        body: errorResponse.toJson((data) => data.toJson()),
       );
     } on JWTException {
       final errorResponse = BaseResponse<User>.error(
@@ -70,7 +71,7 @@ Future<Response> onRequest(RequestContext context) async {
       );
       return Response.json(
         statusCode: HttpStatus.unauthorized,
-        body: errorResponse.toJson((data) => data?.toJson() ?? {}),
+        body: errorResponse.toJson((data) => data.toJson()),
       );
     }
   } catch (e) {
@@ -79,7 +80,7 @@ Future<Response> onRequest(RequestContext context) async {
     );
     return Response.json(
       statusCode: HttpStatus.internalServerError,
-      body: errorResponse.toJson((data) => data?.toJson()),
+      body: errorResponse.toJson((data) => data.toJson()),
     );
   }
 }
