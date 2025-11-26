@@ -27,6 +27,11 @@
 
 A monorepo forged with Melos, created to unite and orchestrate its two code-born twins: Arona (Flutter) and Plana (Dart Frog). Under Rem’s structure, both modules work in sync toward a single purpose.
 
+[![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos) 
+[![flutter](https://img.shields.io/badge/flutter-%2361DAFB.svg?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev)
+[![dart](https://img.shields.io/badge/dart-%232275C7.svg?style=flat-square&logo=dart&logoColor=white)](https://dart.dev)
+[![Free Palestine](https://img.shields.io/badge/free%20palestine-%23E91E63.svg?style=flat-square&logo=github-sponsors&logoColor=white)](https://palestine-liberation.org)
+
 ## Project Structure
 
 ```
@@ -250,4 +255,4 @@ git push origin feature/feature-name
 
 ## License
 
-Private project
+MIT License
