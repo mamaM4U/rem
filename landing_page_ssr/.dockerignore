@@ -1,0 +1,8 @@
+.dart_tool/
+.packages
+build/
+.idea/
+*.iml
+.DS_Store
+pubspec_overrides.yaml
+custom_lint.log

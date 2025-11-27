@@ -1,0 +1,62 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: rem-db
+    volumes:
+      - ./api_server/data/db:/var/lib/postgresql/data
+      - ./api_server/database.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=rem_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - rem-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Plana - API Server (Dart Frog)
+  plana:
+    build:
+      context: .
+      dockerfile: api_server/Dockerfile
+    container_name: rem-plana
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=rem_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - JWT_SECRET=your-secret-key-change-in-production
+    networks:
+      - rem-network
+
+  # Arisu - Landing Page (Jaspr)
+  arisu:
+    build:
+      context: ./landing_page_ssr
+      dockerfile: Dockerfile
+    container_name: rem-arisu
+    depends_on:
+      - plana
+    ports:
+      - "3000:8080"
+    environment:
+      - API_URL=http://plana:8080
+    networks:
+      - rem-network
+
+networks:
+  rem-network:
+    name: rem-network
+    external: true
