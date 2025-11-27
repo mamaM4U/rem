@@ -25,11 +25,12 @@
 
 # Rem Workspace
 
-A monorepo forged with Melos, created to unite and orchestrate its two code-born twins: Arona (Flutter) and Plana (Dart Frog). Under Rem’s structure, both modules work in sync toward a single purpose.
+A monorepo forged with Melos, created to unite and orchestrate its two code-born twins: Arona (Flutter) and Plana (Dart Frog). Under Rem’s structure, both modules work in sync toward a single purpose. Represented to the world with elegance and grace by Arisu (Jaspr).
 
 [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos) 
 [![flutter](https://img.shields.io/badge/flutter-%2361DAFB.svg?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev)
 [![dart](https://img.shields.io/badge/dart-%232275C7.svg?style=flat-square&logo=dart&logoColor=white)](https://dart.dev)
+[![jaspr](https://img.shields.io/badge/jaspr-%23EC4899.svg?style=flat-square&logo=dart&logoColor=white)](https://jaspr.site)
 [![Free Palestine](https://img.shields.io/badge/free%20palestine-%23E91E63.svg?style=flat-square&logo=github-sponsors&logoColor=white)](https://palestine-liberation.org)
 
 ## Project Structure
@@ -38,6 +39,7 @@ A monorepo forged with Melos, created to unite and orchestrate its two code-born
 rem/
 ├── app/              # Flutter application (arona)
 ├── api_server/       # Dart Frog API server (plana)
+├── landing_page_ssr/ # Jaspr landing page (arisu)
 ├── packages/
 │   └── shared/       # Shared code between app and server
 └── pubspec.yaml      # Workspace configuration
@@ -97,12 +99,21 @@ melos arona
 ### Application
 - `melos arona` - Run Flutter app (arona)
 - `melos plana` - Run Dart Frog server (plana)
+- `melos arisu` - Run Jaspr landing page (arisu)
+- `melos arisu:build` - Build Jaspr landing page for production
 
-### Docker (Plana With Database)
-- `melos plana:docker:up` - Start containers
-- `melos plana:docker:down` - Stop and remove containers
-- `melos plana:docker:logs` - View container logs (follow mode)
-- `melos plana:docker:restart` - Restart containers
+### Docker (Plana Only)
+- `melos plana:docker:up` - Start Plana + Database
+- `melos plana:docker:down` - Stop Plana containers
+- `melos plana:docker:logs` - View Plana logs
+- `melos plana:docker:restart` - Restart Plana containers
+
+### Docker (Full Stack)
+- `melos docker:up` - Start all services (DB + Plana + Arisu)
+- `melos docker:down` - Stop all services
+- `melos docker:logs` - View all container logs
+- `melos docker:build` - Build all container images
+- `melos docker:restart` - Restart all services
 
 ### Dependencies
 - `melos bootstrap` - Initialize workspace and get all dependencies
@@ -119,6 +130,7 @@ melos arona
 
 ### Typical Development Workflow
 
+**Option 1: Local Development (Multiple Terminals)**
 ```bash
 # Initial setup
 melos bootstrap
@@ -127,12 +139,30 @@ melos bootstrap
 melos plana:docker:up      # Start database
 melos plana                # Start API server (terminal 1)
 melos arona                # Start Flutter app (terminal 2)
+melos arisu                # Start landing page (terminal 3)
 
 # View logs
 melos plana:docker:logs    # View database logs
 
 # Cleanup
 melos plana:docker:down    # Stop database
+```
+
+**Option 2: Full Docker Stack**
+```bash
+# Build and start all services
+melos docker:up
+
+# Services available at:
+# - Arisu (Landing): http://localhost:3000
+# - Plana (API):     http://localhost:8080
+# - PostgreSQL:      localhost:5432
+
+# View logs
+melos docker:logs
+
+# Stop all
+melos docker:down
 ```
 
 ## Tech Stack
@@ -187,6 +217,22 @@ melos plana:docker:down    # Stop database
 
 **Serialization:**
 - json_annotation & json_serializable - JSON serialization
+
+### Landing Page (arisu)
+
+**Framework:**
+- Jaspr - Dart web framework with SSR
+
+**Routing:**
+- jaspr_router - Client-side routing
+
+**Styling:**
+- CSS-in-Dart - Type-safe styling system
+
+**Development:**
+- jaspr_builder - Build system
+- jaspr_web_compilers - Web compilation
+- jaspr_lints - Linting rules
 
 ### Shared Package
 

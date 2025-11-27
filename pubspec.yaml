@@ -7,6 +7,7 @@ environment:
 workspace:
   - app
   - api_server
+  - landing_page_ssr
   - packages/shared
 
 dev_dependencies:
@@ -90,3 +91,38 @@ melos:
       packageFilters:
         scope: plana
       description: Restart Docker containers for Plana
+
+    # Run Jaspr landing page
+    arisu:
+      exec: jaspr serve
+      packageFilters:
+        scope: arisu
+      description: Run the Jaspr landing page
+
+    # Build Jaspr landing page
+    arisu:build:
+      exec: jaspr build
+      packageFilters:
+        scope: arisu
+      description: Build the Jaspr landing page for production
+
+    # Docker commands for full stack (root docker-compose)
+    docker:up:
+      run: docker-compose up -d 2>&1
+      description: Start all services (DB + Plana + Arisu)
+
+    docker:down:
+      run: docker-compose down 2>&1
+      description: Stop all services
+
+    docker:logs:
+      run: docker-compose logs -f
+      description: View all container logs
+
+    docker:build:
+      run: docker-compose build 2>&1
+      description: Build all container images
+
+    docker:restart:
+      run: docker-compose restart 2>&1
+      description: Restart all services
