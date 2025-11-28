@@ -36,3 +36,10 @@ pubspec_overrides.yaml
 # Docker
 docker-compose.override.yml
 api_server/data/
+
+# Environment files
+.env
+.envied
+!.env.example
+!.envied.example
+!.env.docker
