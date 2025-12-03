@@ -66,9 +66,28 @@ cp .envied.example .envied
 
 2. Update values in `.envied`:
 ```
-API_URL=http://localhost:8080
-APP_NAME=Rem App
+# For Android Emulator (auto-detected)
+API_BASE_URL_EMULATOR=http://10.0.2.2:8080
+
+# For Android Physical Device (auto-detected)
+# Find your LAN IP first:
+# - Windows: ipconfig
+# - Mac: ifconfig | grep 'inet ' | grep -v 127.0.0.1
+# - Linux: ip addr show | grep 'inet ' | grep -v 127.0.0.1
+API_BASE_URL_PHYSICAL=http://192.168.1.100:8080
+
+# For iOS Simulator
+API_BASE_URL_IOS=http://localhost:8080
+
+# For Web/Desktop
+API_BASE_URL_WEB=http://localhost:8080
 ```
+
+**Note**: The app automatically detects whether you're running on:
+- Android Emulator → uses `API_BASE_URL_EMULATOR` (10.0.2.2)
+- Android Physical Device → uses `API_BASE_URL_PHYSICAL` (your LAN IP)
+- iOS Simulator → uses `API_BASE_URL_IOS` (localhost)
+- Web/Desktop → uses `API_BASE_URL_WEB` (localhost)
 
 3. Run build_runner to generate obfuscated env.g.dart:
 ```bash

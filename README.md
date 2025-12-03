@@ -69,10 +69,16 @@ melos bootstrap
 # In app/
 cp .envied.example .envied
 # Edit .envied with your configuration
+# Important: If using Android physical device, update API_BASE_URL_PHYSICAL with your LAN IP
+# Find your LAN IP: Windows (ipconfig), Mac (ifconfig), Linux (ip addr show)
 
 # In api_server/
 cp .env.example .env
 # Edit .env with your configuration
+
+# In landing_page_ssr/ (optional)
+cp .envied.example .envied
+# Edit .envied with your configuration
 ```
 
 ## Development
@@ -284,6 +290,47 @@ if (!isEmail(email)) {
   throw Exception('Invalid email');
 }
 ```
+
+## Troubleshooting
+
+### Android Physical Device Not Connecting to API
+
+If you're running the app on an Android physical device and can't connect to the API server:
+
+1. **Find your computer's LAN IP address**:
+   ```bash
+   # Windows
+   ipconfig
+   # Look for "IPv4 Address" (e.g., 192.168.1.100)
+
+   # Mac
+   ifconfig | grep 'inet ' | grep -v 127.0.0.1
+
+   # Linux
+   ip addr show | grep 'inet ' | grep -v 127.0.0.1
+   ```
+
+2. **Update your app's `.envied` file**:
+   ```bash
+   # In app/.envied
+   API_BASE_URL_PHYSICAL=http://YOUR_LAN_IP:8080
+   # Example: API_BASE_URL_PHYSICAL=http://192.168.1.100:8080
+   ```
+
+3. **Regenerate environment files**:
+   ```bash
+   melos build:runner
+   ```
+
+4. **Ensure your device and computer are on the same network** (WiFi)
+
+5. **Make sure the API server is running** and accessible from your network
+
+**Note**: The app automatically detects whether you're using:
+- Android Emulator (uses `10.0.2.2`)
+- Android Physical Device (uses your LAN IP)
+- iOS Simulator (uses `localhost`)
+- Web/Desktop (uses `localhost`)
 
 ## Git Workflow
 

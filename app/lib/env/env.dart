@@ -5,7 +5,11 @@ part 'env.g.dart';
 @Envied(path: '.envied')
 abstract class Env {
   @EnviedField(obfuscate: true)
-  static String API_BASE_URL = _Env.API_BASE_URL;
+  static String API_BASE_URL_EMULATOR = _Env.API_BASE_URL_EMULATOR;
+  @EnviedField(obfuscate: true)
+  static String API_BASE_URL_PHYSICAL = _Env.API_BASE_URL_PHYSICAL;
   @EnviedField(obfuscate: true)
   static String API_BASE_URL_IOS = _Env.API_BASE_URL_IOS;
+  @EnviedField(obfuscate: true)
+  static String API_BASE_URL_WEB = _Env.API_BASE_URL_WEB;
 }

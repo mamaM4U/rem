@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:requests_inspector/requests_inspector.dart';
 
 import '../env/env.dart';
+import '../helpers/utils/device_detector.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -12,12 +13,20 @@ class ApiService {
   static final ApiService _instance = ApiService._internal();
   factory ApiService() => _instance;
 
-  // Use 10.0.2.2 for Android emulator, localhost for iOS/web
+  /// Get the appropriate base URL based on platform and device type
   static String get baseUrl {
     if (Platform.isAndroid) {
-      return Env.API_BASE_URL;
+      // Check if it's emulator or physical device
+      if (DeviceDetector.isAndroidEmulator()) {
+        return Env.API_BASE_URL_EMULATOR; // 10.0.2.2:8080
+      } else {
+        return Env.API_BASE_URL_PHYSICAL; // Your LAN IP
+      }
+    } else if (Platform.isIOS) {
+      return Env.API_BASE_URL_IOS; // localhost for iOS simulator
+    } else {
+      return Env.API_BASE_URL_WEB; // localhost for web/desktop
     }
-    return Env.API_BASE_URL_IOS;
   }
 
   ApiService._internal() {

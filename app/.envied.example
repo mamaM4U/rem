@@ -1,5 +1,15 @@
-# API Base URL for Android (use 10.0.2.2 for emulator)
-API_BASE_URL=http://10.0.2.2:8080
+# API Base URL for Android Emulator
+API_BASE_URL_EMULATOR=http://10.0.2.2:8080
 
-# API Base URL for iOS/Web (use localhost)
+# API Base URL for Android Physical Device
+# To find your LAN IP:
+# - Windows: Open CMD and run "ipconfig" → Look for IPv4 Address
+# - Mac: Open Terminal and run "ifconfig | grep 'inet ' | grep -v 127.0.0.1"
+# - Linux: Open Terminal and run "ip addr show | grep 'inet ' | grep -v 127.0.0.1"
+API_BASE_URL_PHYSICAL=http://192.168.1.100:8080
+
+# API Base URL for iOS Simulator
 API_BASE_URL_IOS=http://localhost:8080
+
+# API Base URL for Web (browser)
+API_BASE_URL_WEB=http://localhost:8080
