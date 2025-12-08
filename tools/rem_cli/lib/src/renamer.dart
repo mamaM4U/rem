@@ -466,8 +466,55 @@ flavorizr:
     
     if (File(examplePath).existsSync() && !File(targetPath).existsSync()) {
       print('📁 Copying $folder/.envied.example to $folder/.envied...');
-      File(examplePath).copySync(targetPath);
+      var content = File(examplePath).readAsStringSync();
+      
+      // Auto-detect LAN IP for physical device testing
+      if (folder == 'app') {
+        final lanIp = await _getLanIpAddress();
+        if (lanIp != null) {
+          print('📡 Detected LAN IP: $lanIp');
+          content = content.replaceAll(
+            'API_BASE_URL_PHYSICAL=http://192.168.1.100:8080',
+            'API_BASE_URL_PHYSICAL=http://$lanIp:8080',
+          );
+        }
+      }
+      
+      File(targetPath).writeAsStringSync(content);
     }
+  }
+
+  Future<String?> _getLanIpAddress() async {
+    try {
+      final interfaces = await NetworkInterface.list(
+        type: InternetAddressType.IPv4,
+        includeLinkLocal: false,
+      );
+      
+      for (final interface in interfaces) {
+        for (final addr in interface.addresses) {
+          final ip = addr.address;
+          // Look for common LAN IP ranges
+          if (ip.startsWith('192.168.') || 
+              ip.startsWith('10.') || 
+              (ip.startsWith('172.') && _isPrivate172(ip))) {
+            return ip;
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore errors, will use default IP
+    }
+    return null;
+  }
+
+  bool _isPrivate172(String ip) {
+    final parts = ip.split('.');
+    if (parts.length >= 2) {
+      final second = int.tryParse(parts[1]) ?? 0;
+      return second >= 16 && second <= 31;
+    }
+    return false;
   }
 
   Future<void> _generateVsCodeLaunchJson() async {

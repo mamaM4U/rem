@@ -52,7 +52,51 @@ rem/
 - Melos: ^7.3.0
 - PostgreSQL (for database)
 
-## Setup
+## Quick Start (Recommended)
+
+Use the CLI init tool to quickly set up your project with custom names and configurations.
+
+### macOS / Linux
+```bash
+./init.sh
+```
+
+### Windows
+```cmd
+init.bat
+```
+
+The CLI will guide you through:
+1. **Project name** - Workspace name (e.g. `my_project`)
+2. **Components selection** - Choose which modules to include:
+   - Mobile App (arona)
+   - API Server (plana)
+   - Landing Page (arisu)
+3. **Mobile App config** (if selected):
+   - Bundle ID (e.g. `com.mycompany.myapp`)
+   - App display name
+4. **API Server config** (if selected):
+   - Package name
+   - Database name
+
+The CLI automatically:
+- Renames all packages and updates imports
+- Updates Android (build.gradle, AndroidManifest, Kotlin package)
+- Updates iOS (project.pbxproj, Info.plist)
+- Updates Docker configurations
+- Sets up Flutter flavors (local, dev, prod)
+- Generates VS Code launch.json
+- Generates Android Studio run configurations
+- Runs `melos bootstrap` and `flutter_flavorizr`
+- Copies `.envied.example` to `.envied`
+
+After init completes, just edit the `.envied` files with your config and run `melos build:runner`.
+
+---
+
+## Manual Setup
+
+If you prefer manual setup or need more control:
 
 1. Install Melos globally:
 ```bash
