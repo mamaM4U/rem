@@ -32,6 +32,7 @@ class ProjectRenamer {
     }
 
     await _updateRootDockerCompose();
+    await _createDockerNetwork();
     await _removeUnselectedComponents();
     await _setupFlavorizr();
 
@@ -298,6 +299,47 @@ class ProjectRenamer {
     }
 
     File(dockerComposePath).writeAsStringSync(content);
+  }
+
+  Future<void> _createDockerNetwork() async {
+    if (!config.includePlana) return;
+
+    final networkName = '${config.workspaceName}-network';
+    
+    // Check if docker is available
+    final dockerCheck = await Process.run('docker', ['--version'], runInShell: true);
+    if (dockerCheck.exitCode != 0) {
+      print('⚠️  Docker not found. Skipping network creation.');
+      return;
+    }
+
+    // Check if network already exists
+    final checkResult = await Process.run(
+      'docker',
+      ['network', 'ls', '--filter', 'name=$networkName', '--format', '{{.Name}}'],
+      runInShell: true,
+    );
+    
+    final existingNetworks = (checkResult.stdout as String).trim();
+    if (existingNetworks.contains(networkName)) {
+      print('🐳 Docker network "$networkName" already exists');
+      return;
+    }
+
+    // Create the network
+    print('🐳 Creating Docker network "$networkName"...');
+    final result = await Process.run(
+      'docker',
+      ['network', 'create', networkName],
+      runInShell: true,
+    );
+    
+    if (result.exitCode == 0) {
+      print('${green('✓')} Docker network created');
+    } else {
+      print('${yellow('⚠️  Failed to create Docker network. Create it manually:')}');
+      print('   docker network create $networkName');
+    }
   }
 
   String _removeDockerService(String content, String serviceName) {
