@@ -241,6 +241,14 @@ class ProjectRenamer {
       dockerContent = dockerContent.replaceAll('POSTGRES_DB=rem_db', 'POSTGRES_DB=${planaConfig.databaseName}');
       File(apiDockerComposePath).writeAsStringSync(dockerContent);
     }
+
+    // Update .envied.example with new database name
+    final enviedExamplePath = p.join(rootPath, 'api_server', '.envied.example');
+    if (File(enviedExamplePath).existsSync()) {
+      var envContent = File(enviedExamplePath).readAsStringSync();
+      envContent = envContent.replaceAll('DATABASE_NAME=rem_db', 'DATABASE_NAME=${planaConfig.databaseName}');
+      File(enviedExamplePath).writeAsStringSync(envContent);
+    }
   }
 
   Future<void> _renameArisu() async {
@@ -291,12 +299,20 @@ class ProjectRenamer {
     if (!File(dockerComposePath).existsSync()) return;
 
     var content = File(dockerComposePath).readAsStringSync();
+    
+    final dbName = config.planaConfig?.databaseName ?? '${config.workspaceName}_db';
+
+    // Add stack name at the top if not present
+    if (!content.startsWith('name:')) {
+      content = 'name: ${config.workspaceName}\n\n$content';
+    }
 
     content = content.replaceAll('rem-db', '${config.workspaceName}-db');
     content = content.replaceAll('rem-network', '${config.workspaceName}-network');
     content = content.replaceAll('rem-plana', '${config.workspaceName}-api');
     content = content.replaceAll('rem-arisu', '${config.workspaceName}-web');
-    content = content.replaceAll('POSTGRES_DB=rem_db', 'POSTGRES_DB=${config.planaConfig?.databaseName ?? '${config.workspaceName}_db'}');
+    content = content.replaceAll('POSTGRES_DB=rem_db', 'POSTGRES_DB=$dbName');
+    content = content.replaceAll('DATABASE_NAME=rem_db', 'DATABASE_NAME=$dbName');
 
     if (!config.includePlana) {
       content = _removeDockerService(content, 'plana');

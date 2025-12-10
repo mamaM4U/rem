@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:requests_inspector/requests_inspector.dart';
 
 import 'constants/routes.dart';
+import 'helpers/utils/device_detector.dart';
 import 'routes/routes.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
@@ -19,6 +20,9 @@ Future<void> main() async {
       statusBarBrightness: Brightness.light,
     ),
   );
+
+  // Initialize device detection (must be before ApiService)
+  await DeviceDetector.init();
 
   // Initialize ApiService and load saved token
   final apiService = ApiService();

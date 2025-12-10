@@ -1,29 +1,28 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
+
 class DeviceDetector {
+  static bool? _isEmulator;
+
+  /// Initialize device detection - call this at app startup
+  static Future<void> init() async {
+    if (Platform.isAndroid) {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      _isEmulator = !androidInfo.isPhysicalDevice;
+    } else {
+      _isEmulator = false;
+    }
+  }
+
   /// Check if the current Android device is an emulator
-  /// Returns true if emulator, false if physical device
+  /// Must call init() first at app startup
   static bool isAndroidEmulator() {
     if (!Platform.isAndroid) {
       return false;
     }
-
-    // Check common emulator indicators
-    final brand = Platform.environment['BRAND']?.toLowerCase() ?? '';
-    final device = Platform.environment['DEVICE']?.toLowerCase() ?? '';
-    final model = Platform.environment['MODEL']?.toLowerCase() ?? '';
-    final product = Platform.environment['PRODUCT']?.toLowerCase() ?? '';
-    final manufacturer = Platform.environment['MANUFACTURER']?.toLowerCase() ?? '';
-
-    // Common emulator identifiers
-    return brand.contains('generic') ||
-        device.contains('generic') ||
-        model.contains('emulator') ||
-        model.contains('sdk') ||
-        product.contains('sdk') ||
-        product.contains('emulator') ||
-        manufacturer.contains('genymotion') ||
-        (manufacturer.contains('google') && !model.startsWith('pixel'));
+    return _isEmulator ?? false;
   }
 
   /// Get platform name for debugging

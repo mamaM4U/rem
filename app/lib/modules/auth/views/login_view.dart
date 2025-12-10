@@ -23,7 +23,7 @@ class LoginView extends GetView<AuthController> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
-              key: controller.formKey,
+              key: controller.loginFormKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -188,7 +188,7 @@ class LoginView extends GetView<AuthController> {
                       TextButton(
                         onPressed: () {
                           controller.clearFields();
-                          Get.offNamed('/register');
+                          Get.toNamed('/register');
                         },
                         child: const Text('Register'),
                       ),

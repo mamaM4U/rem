@@ -7,7 +7,8 @@ import '../../../services/auth_service.dart';
 class AuthController extends GetxController {
   final AuthService _authService = AuthService(ApiService());
 
-  final formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
@@ -41,10 +42,13 @@ class AuthController extends GetxController {
     confirmPasswordController.clear();
     obscurePassword.value = true;
     obscureConfirmPassword.value = true;
+    // Reset form keys to avoid GlobalKey conflicts
+    loginFormKey = GlobalKey<FormState>();
+    registerFormKey = GlobalKey<FormState>();
   }
 
   Future<void> login() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!loginFormKey.currentState!.validate()) return;
 
     isLoading.value = true;
 
@@ -69,7 +73,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> register() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!registerFormKey.currentState!.validate()) return;
 
     isLoading.value = true;
 
