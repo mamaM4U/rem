@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:postgres/postgres.dart';
 import 'package:plana/env/env.dart';
+import 'package:postgres/postgres.dart';
 
 /// PostgreSQL database connection
 class Database {

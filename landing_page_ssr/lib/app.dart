@@ -14,11 +14,13 @@ class App extends StatelessComponent {
   Component build(BuildContext context) {
     return div(classes: 'main', [
       const Header(),
-      Router(routes: [
-        Route(path: '/', title: 'Rem Workspace', builder: (context, state) => const Home()),
-        Route(path: '/blog', title: 'Blog - Rem Workspace', builder: (context, state) => const Blog()),
-        Route(path: '/about', title: 'About - Rem Workspace', builder: (context, state) => const About()),
-      ]),
+      Router(
+        routes: [
+          Route(path: '/', title: 'Rem Workspace', builder: (context, state) => const Home()),
+          Route(path: '/blog', title: 'Blog - Rem Workspace', builder: (context, state) => const Blog()),
+          Route(path: '/about', title: 'About - Rem Workspace', builder: (context, state) => const About()),
+        ],
+      ),
     ]);
   }
 
@@ -27,20 +29,16 @@ class App extends StatelessComponent {
     // Global reset and base styles
     css('*', [
       css('&').styles(
-        margin: Margin.zero,
         padding: Padding.zero,
+        margin: Margin.zero,
         boxSizing: BoxSizing.borderBox,
       ),
     ]),
     css('html, body', [
       css('&').styles(
-        fontFamily: const FontFamily.list([
-          FontFamily('Inter'),
-          FontFamily('system-ui'),
-          FontFamily('-apple-system'),
-        ]),
-        backgroundColor: darkBg,
         color: textPrimary,
+        fontFamily: const FontFamily.list([FontFamily('Inter'), FontFamily('system-ui'), FontFamily('-apple-system')]),
+        backgroundColor: darkBg,
       ),
     ]),
     css('.main', [

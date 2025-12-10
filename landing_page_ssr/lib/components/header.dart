@@ -42,9 +42,9 @@ class Header extends StatelessComponent {
         backgroundColor: darkBg,
       ),
       css('.logo').styles(
+        color: textPrimary,
         fontSize: 1.25.rem,
         fontWeight: FontWeight.w700,
-        color: textPrimary,
       ),
       css('nav', [
         css('&').styles(
@@ -62,13 +62,13 @@ class Header extends StatelessComponent {
             textDecoration: const TextDecoration(line: TextDecorationLine.none),
           ),
           css('&:hover').styles(
-            backgroundColor: cardBg,
             color: textPrimary,
+            backgroundColor: cardBg,
           ),
         ]),
         css('div.active a').styles(
-          backgroundColor: primaryColor,
           color: Colors.white,
+          backgroundColor: primaryColor,
         ),
       ]),
     ]),

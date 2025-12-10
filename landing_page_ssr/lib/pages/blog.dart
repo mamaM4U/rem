@@ -1,5 +1,4 @@
 import 'package:jaspr/jaspr.dart';
-import 'package:jaspr/server.dart';
 
 import '../constants/theme.dart';
 import '../models/home_data.dart';
@@ -32,12 +31,16 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
   @override
   Map<String, dynamic> getState() {
     return {
-      'items': items.map((e) => {
-        'id': e.id,
-        'title': e.title,
-        'subtitle': e.subtitle,
-        'imageUrl': e.imageUrl,
-      }).toList(),
+      'items': items
+          .map(
+            (e) => {
+              'id': e.id,
+              'title': e.title,
+              'subtitle': e.subtitle,
+              'imageUrl': e.imageUrl,
+            },
+          )
+          .toList(),
       'errorMessage': errorMessage,
       'isLoading': isLoading,
     };
@@ -46,12 +49,18 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
   @override
   void updateState(Map<String, dynamic>? state) {
     if (state != null) {
-      items = (state['items'] as List?)?.map((e) => HomeItem(
-        id: e['id'] as String,
-        title: e['title'] as String,
-        subtitle: e['subtitle'] as String,
-        imageUrl: e['imageUrl'] as String?,
-      )).toList() ?? [];
+      items =
+          (state['items'] as List?)
+              ?.map(
+                (e) => HomeItem(
+                  id: e['id'] as String,
+                  title: e['title'] as String,
+                  subtitle: e['subtitle'] as String,
+                  imageUrl: e['imageUrl'] as String?,
+                ),
+              )
+              .toList() ??
+          [];
       errorMessage = state['errorMessage'] as String?;
       isLoading = state['isLoading'] as bool? ?? false;
     }
@@ -111,8 +120,8 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
     css('.blog', [
       css('&').styles(
         minHeight: 100.vh,
-        backgroundColor: darkBg,
         color: textPrimary,
+        backgroundColor: darkBg,
       ),
     ]),
 
@@ -133,16 +142,16 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
     css('.blog-content', [
       css('&').styles(
         maxWidth: 1200.px,
-        margin: Margin.symmetric(horizontal: Unit.auto),
         padding: Padding.all(2.rem),
+        margin: Margin.symmetric(horizontal: Unit.auto),
       ),
     ]),
 
     css('.loading', [
       css('&').styles(
         padding: Padding.all(4.rem),
-        textAlign: TextAlign.center,
         color: textSecondary,
+        textAlign: TextAlign.center,
       ),
     ]),
 
@@ -156,14 +165,14 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
       css('p').styles(color: textPrimary),
       css('.hint').styles(
         margin: Margin.only(top: 1.rem),
-        fontSize: 0.875.rem,
         color: textSecondary,
+        fontSize: 0.875.rem,
       ),
       css('code').styles(
         padding: Padding.symmetric(horizontal: 0.5.rem, vertical: 0.25.rem),
         radius: BorderRadius.circular(4.px),
-        backgroundColor: const Color('#450a0a'),
         fontFamily: const FontFamily('monospace'),
+        backgroundColor: const Color('#450a0a'),
       ),
     ]),
 
@@ -204,9 +213,9 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
       css('&').styles(padding: Padding.all(1.5.rem)),
       css('h3').styles(
         margin: Margin.only(bottom: 0.5.rem),
+        color: textPrimary,
         fontSize: 1.125.rem,
         fontWeight: FontWeight.w600,
-        color: textPrimary,
         raw: {
           'display': '-webkit-box',
           '-webkit-line-clamp': '2',
@@ -216,13 +225,13 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
       ),
       css('p').styles(
         margin: Margin.only(bottom: 1.rem),
+        color: textSecondary,
         fontSize: 0.875.rem,
         lineHeight: 1.5.em,
-        color: textSecondary,
       ),
       css('.post-id').styles(
-        fontSize: 0.75.rem,
         color: primaryColor,
+        fontSize: 0.75.rem,
       ),
     ]),
   ];

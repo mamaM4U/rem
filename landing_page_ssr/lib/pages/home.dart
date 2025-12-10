@@ -13,9 +13,7 @@ class Home extends StatelessComponent {
       section(classes: 'hero', [
         div(classes: 'hero-content', [
           h1([text('Rem Workspace')]),
-          p(classes: 'tagline', [
-            text('A monorepo forged with Melos, uniting code-born twins under one structure.')
-          ]),
+          p(classes: 'tagline', [text('A monorepo forged with Melos, uniting code-born twins under one structure.')]),
           div(classes: 'badges', [
             _badge('Melos', '#f700ff'),
             _badge('Flutter', '#61DAFB'),
@@ -28,15 +26,13 @@ class Home extends StatelessComponent {
       // Projects Section
       section(classes: 'projects', [
         h2([text('The Twins')]),
-        p(classes: 'section-desc', [
-          text('Under Rem\'s guidance, the twins work in perfect harmony.')
-        ]),
+        p(classes: 'section-desc', [text('Under Rem\'s guidance, the twins work in perfect harmony.')]),
         div(classes: 'cards', [
           _projectCard(
             'Arona',
             'Flutter App',
             'The bright, cheerful twin serving as the frontline interface. '
-            'Arona shines on the surface, interacting with users and spreading light.',
+                'Arona shines on the surface, interacting with users and spreading light.',
             aronaColor,
             ['Flutter', 'GetX', 'Dio', 'Secure Storage'],
           ),
@@ -44,7 +40,7 @@ class Home extends StatelessComponent {
             'Plana',
             'API Server',
             'The shadowed, silent twin guarding the data flow behind the scenes. '
-            'Plana operates in the background, managing unseen logic.',
+                'Plana operates in the background, managing unseen logic.',
             planaColor,
             ['Dart Frog', 'PostgreSQL', 'JWT', 'REST API'],
           ),
@@ -57,9 +53,11 @@ class Home extends StatelessComponent {
           h2([text('Arisu')]),
           p(classes: 'arisu-role', [text('Landing Page')]),
           p([
-            text('The newest addition to the family. Built with Jaspr, '
-                'Arisu serves as the welcoming face of the Rem workspace, '
-                'presenting the project to the world with elegance.')
+            text(
+              'The newest addition to the family. Built with Jaspr, '
+              'Arisu serves as the welcoming face of the Rem workspace, '
+              'presenting the project to the world with elegance.',
+            ),
           ]),
           div(classes: 'tech-stack', [
             _techBadge('Jaspr'),
@@ -142,8 +140,8 @@ class Home extends StatelessComponent {
     css('.landing', [
       css('&').styles(
         minHeight: 100.vh,
-        backgroundColor: darkBg,
         color: textPrimary,
+        backgroundColor: darkBg,
       ),
     ]),
 
@@ -171,21 +169,21 @@ class Home extends StatelessComponent {
       ),
       css('.tagline').styles(
         margin: Margin.only(bottom: 2.rem),
-        fontSize: 1.25.rem,
         color: textSecondary,
+        fontSize: 1.25.rem,
       ),
       css('.badges').styles(
         display: Display.flex,
-        gap: Gap(column: 0.5.rem),
-        justifyContent: JustifyContent.center,
         flexWrap: FlexWrap.wrap,
+        justifyContent: JustifyContent.center,
+        gap: Gap(column: 0.5.rem),
       ),
       css('.badge').styles(
         padding: Padding.symmetric(horizontal: 0.75.rem, vertical: 0.25.rem),
         radius: BorderRadius.circular(4.px),
+        color: Colors.white,
         fontSize: 0.875.rem,
         fontWeight: FontWeight.w600,
-        color: Colors.white,
       ),
     ]),
 
@@ -208,9 +206,9 @@ class Home extends StatelessComponent {
         display: Display.flex,
         maxWidth: 900.px,
         margin: Margin.symmetric(horizontal: Unit.auto),
-        gap: Gap(column: 2.rem),
-        justifyContent: JustifyContent.center,
         flexWrap: FlexWrap.wrap,
+        justifyContent: JustifyContent.center,
+        gap: Gap(column: 2.rem),
       ),
     ]),
 
@@ -233,26 +231,26 @@ class Home extends StatelessComponent {
         fontWeight: FontWeight.w700,
       ),
       css('.card-header .role').styles(
-        fontSize: 0.875.rem,
         opacity: 0.9,
+        fontSize: 0.875.rem,
       ),
       css('.card-body').styles(padding: Padding.all(1.5.rem)),
       css('.card-body p').styles(
         margin: Margin.only(bottom: 1.rem),
-        lineHeight: 1.6.em,
         color: textSecondary,
+        lineHeight: 1.6.em,
       ),
       css('.tech-list').styles(
         display: Display.flex,
-        gap: Gap(column: 0.5.rem),
         flexWrap: FlexWrap.wrap,
+        gap: Gap(column: 0.5.rem),
       ),
       css('.tech').styles(
         padding: Padding.symmetric(horizontal: 0.5.rem, vertical: 0.25.rem),
         radius: BorderRadius.circular(4.px),
+        color: textSecondary,
         fontSize: 0.75.rem,
         backgroundColor: const Color('#374151'),
-        color: textSecondary,
       ),
     ]),
 
@@ -268,32 +266,37 @@ class Home extends StatelessComponent {
         margin: Margin.symmetric(horizontal: Unit.auto),
       ),
       css('h2').styles(
+        color: arisuColor,
         fontSize: 2.rem,
         fontWeight: FontWeight.w700,
-        color: arisuColor,
       ),
       css('.arisu-role').styles(
         margin: Margin.only(bottom: 1.rem),
-        fontSize: 1.rem,
         color: textSecondary,
+        fontSize: 1.rem,
       ),
       css('p').styles(
-        lineHeight: 1.6.em,
         color: textPrimary,
+        lineHeight: 1.6.em,
       ),
       css('.tech-stack').styles(
         display: Display.flex,
         margin: Margin.only(top: 1.5.rem),
-        gap: Gap(column: 0.75.rem),
         justifyContent: JustifyContent.center,
+        gap: Gap(column: 0.75.rem),
       ),
       css('.tech-badge').styles(
         padding: Padding.symmetric(horizontal: 1.rem, vertical: 0.5.rem),
+        border: Border.only(
+          left: BorderSide.solid(color: arisuColor, width: 1.px),
+          right: BorderSide.solid(color: arisuColor, width: 1.px),
+          top: BorderSide.solid(color: arisuColor, width: 1.px),
+          bottom: BorderSide.solid(color: arisuColor, width: 1.px),
+        ),
         radius: BorderRadius.circular(20.px),
+        color: arisuColor,
         fontSize: 0.875.rem,
         fontWeight: FontWeight.w600,
-        border: Border.only(left: BorderSide.solid(color: arisuColor, width: 1.px), right: BorderSide.solid(color: arisuColor, width: 1.px), top: BorderSide.solid(color: arisuColor, width: 1.px), bottom: BorderSide.solid(color: arisuColor, width: 1.px)),
-        color: arisuColor,
       ),
     ]),
 
@@ -323,13 +326,13 @@ class Home extends StatelessComponent {
       ),
       css('.stack-item h4').styles(
         margin: Margin.only(bottom: 0.5.rem),
+        color: primaryColor,
         fontSize: 1.rem,
         fontWeight: FontWeight.w600,
-        color: primaryColor,
       ),
       css('.stack-item p').styles(
-        fontSize: 0.875.rem,
         color: textSecondary,
+        fontSize: 0.875.rem,
       ),
     ]),
 
@@ -337,8 +340,10 @@ class Home extends StatelessComponent {
     css('footer', [
       css('&').styles(
         padding: Padding.all(2.rem),
+        border: Border.only(
+          top: BorderSide.solid(color: const Color('#1e293b'), width: 1.px),
+        ),
         textAlign: TextAlign.center,
-        border: Border.only(top: BorderSide.solid(color: const Color('#1e293b'), width: 1.px)),
       ),
       css('p').styles(color: textSecondary),
       css('.support').styles(margin: Margin.only(top: 0.5.rem)),

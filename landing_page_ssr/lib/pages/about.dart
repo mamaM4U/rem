@@ -18,18 +18,22 @@ class About extends StatelessComponent {
         div(classes: 'about-card', [
           h2([text('The Vision')]),
           p([
-            text('Rem is a monorepo workspace forged with Melos, designed to unite and orchestrate '
-                'multiple Dart/Flutter projects under a single, cohesive structure. '
-                'It represents the harmony between frontend and backend development in the Dart ecosystem.')
+            text(
+              'Rem is a monorepo workspace forged with Melos, designed to unite and orchestrate '
+              'multiple Dart/Flutter projects under a single, cohesive structure. '
+              'It represents the harmony between frontend and backend development in the Dart ecosystem.',
+            ),
           ]),
         ]),
 
         div(classes: 'about-card', [
           h2([text('The Twins')]),
           p([
-            text('Arona and Plana are the twin projects that form the core of the Rem workspace. '
-                'Like yin and yang, they complement each other perfectly - '
-                'Arona handles the bright, user-facing interactions while Plana manages the shadowed, backend operations.')
+            text(
+              'Arona and Plana are the twin projects that form the core of the Rem workspace. '
+              'Like yin and yang, they complement each other perfectly - '
+              'Arona handles the bright, user-facing interactions while Plana manages the shadowed, backend operations.',
+            ),
           ]),
         ]),
 
@@ -82,8 +86,8 @@ class About extends StatelessComponent {
     css('.about', [
       css('&').styles(
         minHeight: 100.vh,
-        backgroundColor: darkBg,
         color: textPrimary,
+        backgroundColor: darkBg,
       ),
     ]),
 
@@ -103,27 +107,27 @@ class About extends StatelessComponent {
     css('.about-content', [
       css('&').styles(
         maxWidth: 800.px,
-        margin: Margin.symmetric(horizontal: Unit.auto),
         padding: Padding.symmetric(horizontal: 2.rem),
+        margin: Margin.symmetric(horizontal: Unit.auto),
       ),
     ]),
 
     css('.about-card', [
       css('&').styles(
-        margin: Margin.only(bottom: 2.rem),
         padding: Padding.all(2.rem),
+        margin: Margin.only(bottom: 2.rem),
         radius: BorderRadius.circular(12.px),
         backgroundColor: cardBg,
       ),
       css('h2').styles(
         margin: Margin.only(bottom: 1.rem),
+        color: primaryColor,
         fontSize: 1.5.rem,
         fontWeight: FontWeight.w600,
-        color: primaryColor,
       ),
       css('p').styles(
-        lineHeight: 1.7.em,
         color: textSecondary,
+        lineHeight: 1.7.em,
       ),
     ]),
 
@@ -144,26 +148,26 @@ class About extends StatelessComponent {
       css('.tech-name').styles(
         display: Display.block,
         margin: Margin.only(bottom: 0.25.rem),
-        fontWeight: FontWeight.w600,
         color: textPrimary,
+        fontWeight: FontWeight.w600,
       ),
       css('.tech-desc').styles(
-        fontSize: 0.875.rem,
         color: textSecondary,
+        fontSize: 0.875.rem,
       ),
     ]),
 
     css('.links-section', [
       css('&').styles(
         maxWidth: 800.px,
-        margin: Margin.symmetric(horizontal: Unit.auto),
         padding: Padding.all(2.rem),
+        margin: Margin.symmetric(horizontal: Unit.auto),
       ),
       css('h2').styles(
         margin: Margin.only(bottom: 1.5.rem),
+        textAlign: TextAlign.center,
         fontSize: 1.5.rem,
         fontWeight: FontWeight.w600,
-        textAlign: TextAlign.center,
       ),
     ]),
 
@@ -180,8 +184,8 @@ class About extends StatelessComponent {
         display: Display.block,
         padding: Padding.all(1.5.rem),
         radius: BorderRadius.circular(8.px),
-        backgroundColor: cardBg,
         textDecoration: const TextDecoration(line: TextDecorationLine.none),
+        backgroundColor: cardBg,
         raw: {'transition': 'transform 0.2s, background-color 0.2s'},
       ),
       css('&:hover').styles(
@@ -190,13 +194,13 @@ class About extends StatelessComponent {
       ),
       css('h3').styles(
         margin: Margin.only(bottom: 0.5.rem),
+        color: primaryColor,
         fontSize: 1.rem,
         fontWeight: FontWeight.w600,
-        color: primaryColor,
       ),
       css('p').styles(
-        fontSize: 0.875.rem,
         color: textSecondary,
+        fontSize: 0.875.rem,
       ),
     ]),
   ];
