@@ -10,6 +10,14 @@ class RegisterView extends GetView<AuthController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -240,7 +248,10 @@ class RegisterView extends GetView<AuthController> {
                     children: [
                       const Text('Already have an account? '),
                       TextButton(
-                        onPressed: () => Get.offNamed('/login'),
+                        onPressed: () {
+                          controller.clearFields();
+                          Get.offNamed('/login');
+                        },
                         child: const Text('Login'),
                       ),
                     ],

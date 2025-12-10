@@ -10,6 +10,14 @@ class LoginView extends GetView<AuthController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -178,7 +186,10 @@ class LoginView extends GetView<AuthController> {
                     children: [
                       const Text("Don't have an account? "),
                       TextButton(
-                        onPressed: () => Get.offNamed('/register'),
+                        onPressed: () {
+                          controller.clearFields();
+                          Get.offNamed('/register');
+                        },
                         child: const Text('Register'),
                       ),
                     ],

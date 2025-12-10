@@ -34,6 +34,15 @@ class AuthController extends GetxController {
     obscureConfirmPassword.value = !obscureConfirmPassword.value;
   }
 
+  void clearFields() {
+    emailController.clear();
+    passwordController.clear();
+    nameController.clear();
+    confirmPasswordController.clear();
+    obscurePassword.value = true;
+    obscureConfirmPassword.value = true;
+  }
+
   Future<void> login() async {
     if (!formKey.currentState!.validate()) return;
 
