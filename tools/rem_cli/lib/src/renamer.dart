@@ -263,16 +263,24 @@ class ProjectRenamer {
 
   Future<void> _replaceInDartFiles(String directory, String oldImport, String newImport) async {
     final dir = Directory(directory);
-    if (!dir.existsSync()) return;
+    if (!dir.existsSync()) {
+      print('   ⚠️  Directory not found: $directory');
+      return;
+    }
 
+    var count = 0;
     await for (final entity in dir.list(recursive: true)) {
       if (entity is File && entity.path.endsWith('.dart')) {
         var content = entity.readAsStringSync();
         if (content.contains(oldImport)) {
           content = content.replaceAll(oldImport, newImport);
           entity.writeAsStringSync(content);
+          count++;
         }
       }
+    }
+    if (count > 0) {
+      print('   Updated imports in $count file(s)');
     }
   }
 
@@ -306,22 +314,27 @@ class ProjectRenamer {
 
     final networkName = '${config.workspaceName}-network';
     
-    // Check if docker is available
-    final dockerCheck = await Process.run('docker', ['--version'], runInShell: true);
+    // Check if docker is available and running
+    final dockerCheck = await Process.run(
+      'docker',
+      ['info'],
+      runInShell: true,
+    );
     if (dockerCheck.exitCode != 0) {
-      print('⚠️  Docker not found. Skipping network creation.');
+      print('${yellow('⚠️  Docker is not running or not installed. Skipping network creation.')}');
+      print('   Start Docker and create network manually: docker network create $networkName');
       return;
     }
 
-    // Check if network already exists
+    // Check if network already exists (exact match)
     final checkResult = await Process.run(
       'docker',
-      ['network', 'ls', '--filter', 'name=$networkName', '--format', '{{.Name}}'],
+      ['network', 'ls', '--filter', 'name=^${networkName}\$', '--format', '{{.Name}}'],
       runInShell: true,
     );
     
     final existingNetworks = (checkResult.stdout as String).trim();
-    if (existingNetworks.contains(networkName)) {
+    if (existingNetworks == networkName) {
       print('🐳 Docker network "$networkName" already exists');
       return;
     }
@@ -335,10 +348,12 @@ class ProjectRenamer {
     );
     
     if (result.exitCode == 0) {
-      print('${green('✓')} Docker network created');
+      print('${green('✓')} Docker network "$networkName" created');
     } else {
-      print('${yellow('⚠️  Failed to create Docker network. Create it manually:')}');
-      print('   docker network create $networkName');
+      final stderr = (result.stderr as String).trim();
+      print('${yellow('⚠️  Failed to create Docker network:')}');
+      if (stderr.isNotEmpty) print('   $stderr');
+      print('   Create it manually: docker network create $networkName');
     }
   }
 
@@ -400,6 +415,25 @@ class ProjectRenamer {
     final aronaConfig = config.aronaConfig!;
     final flavorizrConfig = '''
 flavorizr:
+  instructions:
+    - assets:download
+    - assets:extract
+    - android:androidManifest
+    - android:flavorizrGradle
+    - android:buildGradle
+    - android:dummyAssets
+    - android:icons
+    - flutter:flavors
+    - ios:podfile
+    - ios:xcconfig
+    - ios:buildTargets
+    - ios:schema
+    - ios:dummyAssets
+    - ios:icons
+    - ios:plist
+    - ios:launchScreen
+    - assets:clean
+    - ide:config
   flavors:
     local:
       app:
