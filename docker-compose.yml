@@ -59,4 +59,3 @@ services:
 networks:
   rem-network:
     name: rem-network
-    external: true
