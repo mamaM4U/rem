@@ -26,14 +26,19 @@ class ProjectRenamer {
     }
   }
 
-  /// Get dart command with FVM prefix if needed
-  String get _dartCmd => useFvm ? 'fvm dart' : (Platform.isWindows ? 'dart.bat' : 'dart');
+  /// Get dart command and args prefix for FVM
+  String get _dartExe => useFvm ? 'fvm' : (Platform.isWindows ? 'dart.bat' : 'dart');
+  List<String> get _dartPrefix => useFvm ? ['dart'] : [];
   
-  /// Get flutter command with FVM prefix if needed  
-  String get _flutterCmd => useFvm ? 'fvm flutter' : (Platform.isWindows ? 'flutter.bat' : 'flutter');
+  /// Get flutter command and args prefix for FVM
+  String get _flutterExe => useFvm ? 'fvm' : (Platform.isWindows ? 'flutter.bat' : 'flutter');
+  List<String> get _flutterPrefix => useFvm ? ['flutter'] : [];
   
   /// Get melos command (melos doesn't need fvm prefix, it uses project's SDK)
   String get _melosCmd => Platform.isWindows ? 'melos.bat' : 'melos';
+  
+  /// Helper for display strings
+  String get _dartCmdDisplay => useFvm ? 'fvm dart' : 'dart';
 
   Future<void> run() async {
     await _checkFvm();
@@ -525,8 +530,8 @@ flavorizr:
       print('   (This may ask for confirmation)');
       print('');
       final flavProcess = await Process.start(
-        _dartCmd,
-        ['run', 'flutter_flavorizr'],
+        _dartExe,
+        [..._dartPrefix, 'run', 'flutter_flavorizr'],
         workingDirectory: p.join(rootPath, 'app'),
         mode: ProcessStartMode.inheritStdio,
         runInShell: true,
@@ -534,7 +539,7 @@ flavorizr:
       final flavExitCode = await flavProcess.exitCode;
       if (flavExitCode != 0) {
         print('${yellow('⚠️  flutter_flavorizr failed. You may need to run it manually:')}');
-        print('   cd app && $_dartCmd run flutter_flavorizr');
+        print('   cd app && $_dartCmdDisplay run flutter_flavorizr');
       } else {
         print('${green('✓')} flutter_flavorizr completed');
       }
@@ -674,6 +679,17 @@ flavorizr:
 ''';
 
     File(p.join(vscodeDir.path, 'launch.json')).writeAsStringSync(launchJson);
+    
+    // Generate settings.json for FVM if FVM is detected
+    final settingsPath = p.join(vscodeDir.path, 'settings.json');
+    if (useFvm) {
+      print('📁 Generating VS Code settings.json for FVM...');
+      final settingsJson = '''{
+  "dart.flutterSdkPath": ".fvm/flutter_sdk"
+}
+''';
+      File(settingsPath).writeAsStringSync(settingsJson);
+    }
   }
 
   Future<void> _generateAndroidStudioRunConfigs() async {
