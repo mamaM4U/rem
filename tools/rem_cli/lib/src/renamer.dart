@@ -8,10 +8,36 @@ import 'config.dart';
 class ProjectRenamer {
   final String rootPath;
   final ProjectConfig config;
+  late final bool useFvm;
 
   ProjectRenamer({required this.rootPath, required this.config});
 
+  /// Check if FVM is available and .fvmrc exists
+  Future<void> _checkFvm() async {
+    final fvmrcExists = File(p.join(rootPath, '.fvmrc')).existsSync();
+    if (fvmrcExists) {
+      final result = await Process.run('which', ['fvm'], runInShell: true);
+      useFvm = result.exitCode == 0;
+      if (useFvm) {
+        print('🎯 FVM detected, using fvm dart/flutter commands');
+      }
+    } else {
+      useFvm = false;
+    }
+  }
+
+  /// Get dart command with FVM prefix if needed
+  String get _dartCmd => useFvm ? 'fvm dart' : (Platform.isWindows ? 'dart.bat' : 'dart');
+  
+  /// Get flutter command with FVM prefix if needed  
+  String get _flutterCmd => useFvm ? 'fvm flutter' : (Platform.isWindows ? 'flutter.bat' : 'flutter');
+  
+  /// Get melos command (melos doesn't need fvm prefix, it uses project's SDK)
+  String get _melosCmd => Platform.isWindows ? 'melos.bat' : 'melos';
+
   Future<void> run() async {
+    await _checkFvm();
+    
     print('');
     print('${cyan('✨ Initializing project...')}');
     print('');
@@ -480,7 +506,7 @@ flavorizr:
     print('📦 Running melos bootstrap...');
     print('');
     var process = await Process.start(
-      Platform.isWindows ? 'melos.bat' : 'melos',
+      _melosCmd,
       ['bootstrap'],
       workingDirectory: rootPath,
       mode: ProcessStartMode.inheritStdio,
@@ -499,7 +525,7 @@ flavorizr:
       print('   (This may ask for confirmation)');
       print('');
       final flavProcess = await Process.start(
-        Platform.isWindows ? 'dart.bat' : 'dart',
+        _dartCmd,
         ['run', 'flutter_flavorizr'],
         workingDirectory: p.join(rootPath, 'app'),
         mode: ProcessStartMode.inheritStdio,
@@ -508,7 +534,7 @@ flavorizr:
       final flavExitCode = await flavProcess.exitCode;
       if (flavExitCode != 0) {
         print('${yellow('⚠️  flutter_flavorizr failed. You may need to run it manually:')}');
-        print('   cd app && dart run flutter_flavorizr');
+        print('   cd app && $_dartCmd run flutter_flavorizr');
       } else {
         print('${green('✓')} flutter_flavorizr completed');
       }
@@ -519,7 +545,7 @@ flavorizr:
     print('🔨 Running melos build:runner...');
     print('');
     process = await Process.start(
-      Platform.isWindows ? 'melos.bat' : 'melos',
+      _melosCmd,
       ['run', 'build:runner'],
       workingDirectory: rootPath,
       mode: ProcessStartMode.inheritStdio,
