@@ -84,11 +84,7 @@ class _HomePageState extends State<HomePage> {
                 titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
                 title: const Text(
                   'Discover',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 28,
-                  ),
+                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 28),
                 ),
               ),
               actions: [
@@ -97,15 +93,8 @@ class _HomePageState extends State<HomePage> {
                   child: IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.person_outline,
-                        color: Colors.blue,
-                        size: 24,
-                      ),
+                      decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(Icons.person_outline, color: Colors.blue, size: 24),
                     ),
                     onPressed: _handleProfileOrLogin,
                     tooltip: 'Profile',
@@ -122,9 +111,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildSliverBody() {
     if (_isLoading) {
-      return const SliverFillRemaining(
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
     }
 
     if (_errorMessage != null) {
@@ -135,15 +122,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.error_outline,
-                  size: 48,
-                  color: Colors.red,
-                ),
+                decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: const Icon(Icons.error_outline, size: 48, color: Colors.red),
               ),
               const SizedBox(height: 24),
               Padding(
@@ -151,10 +131,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   _errorMessage!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ),
               const SizedBox(height: 24),
@@ -162,12 +139,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: _loadHomeData,
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                ),
+                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
               ),
             ],
           ),
@@ -176,20 +148,13 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (_homeData == null) {
-      return const SliverFillRemaining(
-        child: Center(
-          child: Text('No data available'),
-        ),
-      );
+      return const SliverFillRemaining(child: Center(child: Text('No data available')));
     }
 
     return SliverPadding(
       padding: const EdgeInsets.all(20),
       sliver: SliverList(
-        delegate: SliverChildListDelegate([
-          const SizedBox(height: 8),
-          ..._homeData!.items.map((item) => _buildModernHomeItem(item)),
-        ]),
+        delegate: SliverChildListDelegate([const SizedBox(height: 8), ..._homeData!.items.map((item) => _buildModernHomeItem(item))]),
       ),
     );
   }
@@ -200,13 +165,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,19 +187,10 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [
-                              Colors.blue.withValues(alpha: 0.3),
-                              Colors.purple.withValues(alpha: 0.3),
-                            ],
+                            colors: [Colors.blue.withValues(alpha: 0.3), Colors.purple.withValues(alpha: 0.3)],
                           ),
                         ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_outlined,
-                            size: 48,
-                            color: Colors.white,
-                          ),
-                        ),
+                        child: const Center(child: Icon(Icons.image_outlined, size: 48, color: Colors.white)),
                       );
                     },
                   ),
@@ -248,30 +198,16 @@ class _HomePageState extends State<HomePage> {
                     top: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(20)),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.remove_red_eye_outlined,
-                            size: 14,
-                            color: Colors.white,
-                          ),
+                          const Icon(Icons.remove_red_eye_outlined, size: 14, color: Colors.white),
                           const SizedBox(width: 4),
                           Text(
-                            '${(int.parse(item.id) * 234)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            '${(item.id.hashCode % 1000 + 200)}',
+                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -288,21 +224,11 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                       child: Text(
                         'Post #${item.id}',
-                        style: TextStyle(
-                          color: Colors.blue[700],
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(color: Colors.blue[700], fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -310,22 +236,14 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 12),
                 Text(
                   item.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    height: 1.3,
-                  ),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, height: 1.3),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   item.subtitle,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    height: 1.5,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -335,42 +253,22 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: 20,
-                          color: Colors.grey[600],
-                        ),
+                        Icon(Icons.favorite_border, size: 20, color: Colors.grey[600]),
                         const SizedBox(width: 6),
                         Text(
-                          '${(int.parse(item.id) * 42)}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          '${(item.id.hashCode % 500 + 10)}',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(width: 16),
-                        Icon(
-                          Icons.comment_outlined,
-                          size: 20,
-                          color: Colors.grey[600],
-                        ),
+                        Icon(Icons.comment_outlined, size: 20, color: Colors.grey[600]),
                         const SizedBox(width: 6),
                         Text(
-                          '${(int.parse(item.id) * 12)}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          '${(item.id.hashCode % 50 + 5)}',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
-                    Icon(
-                      Icons.bookmark_border,
-                      size: 22,
-                      color: Colors.grey[600],
-                    ),
+                    Icon(Icons.bookmark_border, size: 22, color: Colors.grey[600]),
                   ],
                 ),
               ],

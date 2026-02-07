@@ -29,20 +29,20 @@ class ProjectRenamer {
   /// Get dart command and args prefix for FVM
   String get _dartExe => useFvm ? 'fvm' : (Platform.isWindows ? 'dart.bat' : 'dart');
   List<String> get _dartPrefix => useFvm ? ['dart'] : [];
-  
+
   /// Get flutter command and args prefix for FVM
   String get _flutterExe => useFvm ? 'fvm' : (Platform.isWindows ? 'flutter.bat' : 'flutter');
   List<String> get _flutterPrefix => useFvm ? ['flutter'] : [];
-  
+
   /// Get melos command (melos doesn't need fvm prefix, it uses project's SDK)
   String get _melosCmd => Platform.isWindows ? 'melos.bat' : 'melos';
-  
+
   /// Helper for display strings
   String get _dartCmdDisplay => useFvm ? 'fvm dart' : 'dart';
 
   Future<void> run() async {
     await _checkFvm();
-    
+
     print('');
     print('${cyan('✨ Initializing project...')}');
     print('');
@@ -355,14 +355,17 @@ class ProjectRenamer {
     }
 
     // Check if network already exists (exact match)
-    final checkResult = await Process.run('docker', [
-      'network',
-      'ls',
-      '--filter',
-      'name=^${networkName}\$',
-      '--format',
-      '{{.Name}}',
-    ], runInShell: true);
+    final checkResult = await Process.run(
+        'docker',
+        [
+          'network',
+          'ls',
+          '--filter',
+          'name=^${networkName}\$',
+          '--format',
+          '{{.Name}}',
+        ],
+        runInShell: true);
 
     final existingNetworks = (checkResult.stdout as String).trim();
     if (existingNetworks == networkName) {
@@ -440,8 +443,7 @@ class ProjectRenamer {
     print('📁 Setting up flutter_flavorizr...');
 
     final aronaConfig = config.aronaConfig!;
-    final flavorizrConfig =
-        '''
+    final flavorizrConfig = '''
 flavorizr:
   instructions:
     - assets:download
@@ -562,6 +564,41 @@ flavorizr:
     } else {
       print('${green('✓')} build:runner completed');
     }
+    // Run clean build to fix potential shader/cache issues
+    await _runCleanBuild();
+  }
+
+  Future<void> _runCleanBuild() async {
+    if (!config.includeArona) return;
+
+    print('');
+    print('🧹 Running clean build (flutter clean & cache removal)...');
+    print('');
+
+    // flutter clean
+    final cleanProcess = await Process.start(
+      _flutterExe,
+      [..._flutterPrefix, 'clean'],
+      workingDirectory: p.join(rootPath, 'app'),
+      mode: ProcessStartMode.inheritStdio,
+      runInShell: true,
+    );
+    await cleanProcess.exitCode;
+
+    // Remove gradle cache manually if on macOS/Linux
+    if (!Platform.isWindows) {
+      final buildDir = Directory(p.join(rootPath, 'app', 'build'));
+      final gradleDir = Directory(p.join(rootPath, 'app', 'android', '.gradle'));
+
+      if (buildDir.existsSync()) {
+        buildDir.deleteSync(recursive: true);
+      }
+      if (gradleDir.existsSync()) {
+        gradleDir.deleteSync(recursive: true);
+      }
+    }
+
+    print('${green('✓')} Clean build completed');
   }
 
   Future<void> _copyEnviedFile(String folder) async {
@@ -628,8 +665,7 @@ flavorizr:
       vscodeDir.createSync(recursive: true);
     }
 
-    final launchJson =
-        '''{
+    final launchJson = '''{
   "version": "0.2.0",
   "configurations": [
     {
@@ -679,7 +715,7 @@ flavorizr:
 ''';
 
     File(p.join(vscodeDir.path, 'launch.json')).writeAsStringSync(launchJson);
-    
+
     // Generate settings.json for FVM if FVM is detected
     final settingsPath = p.join(vscodeDir.path, 'settings.json');
     if (useFvm) {
@@ -706,8 +742,7 @@ flavorizr:
 
     for (final flavor in flavors) {
       final flavorTitle = flavor[0].toUpperCase() + flavor.substring(1);
-      final configXml =
-          '''<component name="ProjectRunConfigurationManager">
+      final configXml = '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
     <option name="filePath" value="\$PROJECT_DIR\$/app/lib/main.dart" />
@@ -717,8 +752,7 @@ flavorizr:
 ''';
       File(p.join(runDir.path, '${aronaConfig.packageName}_${flavor}_debug.run.xml')).writeAsStringSync(configXml);
 
-      final releaseConfigXml =
-          '''<component name="ProjectRunConfigurationManager">
+      final releaseConfigXml = '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Release)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
     <option name="additionalArgs" value="--release" />
