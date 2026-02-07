@@ -5,7 +5,7 @@ environment:
   sdk: ^3.5.0
 
 workspace:
-  - app
+  - apps/app
   - api_server
   - landing_page_ssr
   - packages/shared
