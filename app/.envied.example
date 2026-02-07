@@ -13,3 +13,7 @@ API_BASE_URL_IOS=http://localhost:8080
 
 # API Base URL for Web (browser)
 API_BASE_URL_WEB=http://localhost:8080
+
+# Demo Mode - set to true when running without api_server
+# When enabled, app uses mock data instead of real API calls
+DEMO_MODE=false

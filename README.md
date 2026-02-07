@@ -92,6 +92,38 @@ The CLI automatically:
 
 After init completes, just edit the `.envied` files with your config and run `melos build:runner`.
 
+## 🎭 Demo Mode
+
+When initializing the project with **only the Mobile App (arona)** and without the API Server (plana), the CLI automatically enables **Demo Mode**. This allows the app to run standalone with mock data, perfect for UI development and demonstrations.
+
+### Demo Credentials
+
+| Field    | Value              |
+| -------- | ------------------ |
+| Email    | `demo@example.com` |
+| Password | `demo123`          |
+
+### How It Works
+
+- **DEMO_MODE=true** is automatically set in `app/.envied` when API server is not included
+- Services return mock data instead of making API calls
+- Login validates against demo credentials above
+- Home page shows sample items and todos
+
+### Manual Toggle
+
+You can also manually enable/disable demo mode:
+```bash
+# In app/.envied
+DEMO_MODE=true   # Enable demo mode
+DEMO_MODE=false  # Disable demo mode (default)
+```
+
+After changing, regenerate with:
+```bash
+melos build:runner
+```
+
 ---
 
 ## Manual Setup

@@ -12,4 +12,7 @@ abstract class Env {
   static String API_BASE_URL_IOS = _Env.API_BASE_URL_IOS;
   @EnviedField(obfuscate: true)
   static String API_BASE_URL_WEB = _Env.API_BASE_URL_WEB;
+
+  @EnviedField(defaultValue: 'false')
+  static String DEMO_MODE = _Env.DEMO_MODE;
 }

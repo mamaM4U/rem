@@ -84,10 +84,7 @@ class ProjectRenamer {
     if (config.includeArisu) workspaceLines.add('  - landing_page_ssr');
     workspaceLines.add('  - packages/shared');
 
-    content = content.replaceAllMapped(
-      RegExp(r'workspace:\n(  - [^\n]+\n)+'),
-      (match) => '${workspaceLines.join('\n')}\n',
-    );
+    content = content.replaceAllMapped(RegExp(r'workspace:\n(  - [^\n]+\n)+'), (match) => '${workspaceLines.join('\n')}\n');
 
     File(pubspecPath).writeAsStringSync(content);
   }
@@ -163,11 +160,7 @@ class ProjectRenamer {
     File(appPubspecPath).writeAsStringSync(content);
 
     // Update imports in all Dart files
-    await _replaceInDartFiles(
-      p.join(rootPath, 'app'),
-      "import 'package:arona/",
-      "import 'package:${aronaConfig.packageName}/",
-    );
+    await _replaceInDartFiles(p.join(rootPath, 'app'), "import 'package:arona/", "import 'package:${aronaConfig.packageName}/");
 
     final buildGradlePath = p.join(rootPath, 'app', 'android', 'app', 'build.gradle');
     var gradleContent = File(buildGradlePath).readAsStringSync();
@@ -202,16 +195,12 @@ class ProjectRenamer {
       content = content.replaceFirst(RegExp(r'package [^\n]+'), 'package $newPackage');
 
       final packageParts = newPackage.split('.');
-      final newKotlinPath = p.joinAll([
-        rootPath, 'app', 'android', 'app', 'src', 'main', 'kotlin',
-        ...packageParts,
-      ]);
+      final newKotlinPath = p.joinAll([rootPath, 'app', 'android', 'app', 'src', 'main', 'kotlin', ...packageParts]);
 
       Directory(newKotlinPath).createSync(recursive: true);
       File(p.join(newKotlinPath, 'MainActivity.kt')).writeAsStringSync(content);
 
-      Directory(p.join(rootPath, 'app', 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example'))
-          .deleteSync(recursive: true);
+      Directory(p.join(rootPath, 'app', 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example')).deleteSync(recursive: true);
     }
   }
 
@@ -226,11 +215,7 @@ class ProjectRenamer {
     File(apiPubspecPath).writeAsStringSync(content);
 
     // Update imports in all Dart files
-    await _replaceInDartFiles(
-      p.join(rootPath, 'api_server'),
-      "import 'package:plana/",
-      "import 'package:${planaConfig.packageName}/",
-    );
+    await _replaceInDartFiles(p.join(rootPath, 'api_server'), "import 'package:plana/", "import 'package:${planaConfig.packageName}/");
 
     final apiDockerComposePath = p.join(rootPath, 'api_server', 'docker-compose.yml');
     if (File(apiDockerComposePath).existsSync()) {
@@ -299,7 +284,7 @@ class ProjectRenamer {
     if (!File(dockerComposePath).existsSync()) return;
 
     var content = File(dockerComposePath).readAsStringSync();
-    
+
     final dbName = config.planaConfig?.databaseName ?? '${config.workspaceName}_db';
 
     // Add stack name at the top if not present
@@ -329,13 +314,9 @@ class ProjectRenamer {
     if (!config.includePlana) return;
 
     final networkName = '${config.workspaceName}-network';
-    
+
     // Check if docker is available and running
-    final dockerCheck = await Process.run(
-      'docker',
-      ['info'],
-      runInShell: true,
-    );
+    final dockerCheck = await Process.run('docker', ['info'], runInShell: true);
     if (dockerCheck.exitCode != 0) {
       print('${yellow('⚠️  Docker is not running or not installed. Skipping network creation.')}');
       print('   Start Docker and create network manually: docker network create $networkName');
@@ -343,12 +324,15 @@ class ProjectRenamer {
     }
 
     // Check if network already exists (exact match)
-    final checkResult = await Process.run(
-      'docker',
-      ['network', 'ls', '--filter', 'name=^${networkName}\$', '--format', '{{.Name}}'],
-      runInShell: true,
-    );
-    
+    final checkResult = await Process.run('docker', [
+      'network',
+      'ls',
+      '--filter',
+      'name=^${networkName}\$',
+      '--format',
+      '{{.Name}}',
+    ], runInShell: true);
+
     final existingNetworks = (checkResult.stdout as String).trim();
     if (existingNetworks == networkName) {
       print('🐳 Docker network "$networkName" already exists');
@@ -357,12 +341,8 @@ class ProjectRenamer {
 
     // Create the network
     print('🐳 Creating Docker network "$networkName"...');
-    final result = await Process.run(
-      'docker',
-      ['network', 'create', networkName],
-      runInShell: true,
-    );
-    
+    final result = await Process.run('docker', ['network', 'create', networkName], runInShell: true);
+
     if (result.exitCode == 0) {
       print('${green('✓')} Docker network "$networkName" created');
     } else {
@@ -429,7 +409,8 @@ class ProjectRenamer {
     print('📁 Setting up flutter_flavorizr...');
 
     final aronaConfig = config.aronaConfig!;
-    final flavorizrConfig = '''
+    final flavorizrConfig =
+        '''
 flavorizr:
   instructions:
     - assets:download
@@ -555,41 +536,39 @@ flavorizr:
   Future<void> _copyEnviedFile(String folder) async {
     final examplePath = p.join(rootPath, folder, '.envied.example');
     final targetPath = p.join(rootPath, folder, '.envied');
-    
+
     if (File(examplePath).existsSync() && !File(targetPath).existsSync()) {
       print('📁 Copying $folder/.envied.example to $folder/.envied...');
       var content = File(examplePath).readAsStringSync();
-      
+
       // Auto-detect LAN IP for physical device testing
       if (folder == 'app') {
         final lanIp = await _getLanIpAddress();
         if (lanIp != null) {
           print('📡 Detected LAN IP: $lanIp');
-          content = content.replaceAll(
-            'API_BASE_URL_PHYSICAL=http://192.168.1.100:8080',
-            'API_BASE_URL_PHYSICAL=http://$lanIp:8080',
-          );
+          content = content.replaceAll('API_BASE_URL_PHYSICAL=http://192.168.1.100:8080', 'API_BASE_URL_PHYSICAL=http://$lanIp:8080');
+        }
+
+        // Enable demo mode if API server is not included
+        if (!config.includePlana) {
+          print('🎭 Enabling demo mode (API server not included)');
+          content = content.replaceAll('DEMO_MODE=false', 'DEMO_MODE=true');
         }
       }
-      
+
       File(targetPath).writeAsStringSync(content);
     }
   }
 
   Future<String?> _getLanIpAddress() async {
     try {
-      final interfaces = await NetworkInterface.list(
-        type: InternetAddressType.IPv4,
-        includeLinkLocal: false,
-      );
-      
+      final interfaces = await NetworkInterface.list(type: InternetAddressType.IPv4, includeLinkLocal: false);
+
       for (final interface in interfaces) {
         for (final addr in interface.addresses) {
           final ip = addr.address;
           // Look for common LAN IP ranges
-          if (ip.startsWith('192.168.') || 
-              ip.startsWith('10.') || 
-              (ip.startsWith('172.') && _isPrivate172(ip))) {
+          if (ip.startsWith('192.168.') || ip.startsWith('10.') || (ip.startsWith('172.') && _isPrivate172(ip))) {
             return ip;
           }
         }
@@ -618,7 +597,8 @@ flavorizr:
       vscodeDir.createSync(recursive: true);
     }
 
-    final launchJson = '''{
+    final launchJson =
+        '''{
   "version": "0.2.0",
   "configurations": [
     {
@@ -693,7 +673,8 @@ flavorizr:
     }
 
     // No-flavor configurations (default)
-    final defaultDebugXml = '''<component name="ProjectRunConfigurationManager">
+    final defaultDebugXml =
+        '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="filePath" value="\$PROJECT_DIR\$/app/lib/main.dart" />
     <method v="2" />
@@ -702,7 +683,8 @@ flavorizr:
 ''';
     File(p.join(runDir.path, '${aronaConfig.packageName}_debug.run.xml')).writeAsStringSync(defaultDebugXml);
 
-    final defaultReleaseXml = '''<component name="ProjectRunConfigurationManager">
+    final defaultReleaseXml =
+        '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} (Release)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="additionalArgs" value="--release" />
     <option name="filePath" value="\$PROJECT_DIR\$/app/lib/main.dart" />
@@ -714,10 +696,11 @@ flavorizr:
 
     // Flavor-specific configurations
     final flavors = ['local', 'dev', 'prod'];
-    
+
     for (final flavor in flavors) {
       final flavorTitle = flavor[0].toUpperCase() + flavor.substring(1);
-      final configXml = '''<component name="ProjectRunConfigurationManager">
+      final configXml =
+          '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
     <option name="filePath" value="\$PROJECT_DIR\$/app/lib/main.dart" />
@@ -727,7 +710,8 @@ flavorizr:
 ''';
       File(p.join(runDir.path, '${aronaConfig.packageName}_${flavor}_debug.run.xml')).writeAsStringSync(configXml);
 
-      final releaseConfigXml = '''<component name="ProjectRunConfigurationManager">
+      final releaseConfigXml =
+          '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Release)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
     <option name="additionalArgs" value="--release" />

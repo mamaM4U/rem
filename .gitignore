@@ -43,3 +43,6 @@ api_server/data/
 !.env.example
 !.envied.example
 !.env.docker
+
+# FVM Version Cache
+.fvm/
