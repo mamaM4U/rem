@@ -1,4 +1,4 @@
-import '../env/env.dart';
+import '../../env/env.dart';
 
 /// Helper class for checking demo mode status
 class DemoMode {
