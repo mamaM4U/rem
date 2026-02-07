@@ -40,6 +40,12 @@ class ProjectRenamer {
   /// Helper for display strings
   String get _dartCmdDisplay => useFvm ? 'fvm dart' : 'dart';
 
+  /// Get the app folder name (uses workspaceName)
+  String get _appFolderName => config.workspaceName;
+
+  /// Get the full app path
+  String get _appPath => p.join(rootPath, 'apps', _appFolderName);
+
   Future<void> run() async {
     await _checkFvm();
 
@@ -48,6 +54,7 @@ class ProjectRenamer {
     print('');
 
     await _updateRootPubspec();
+    await _renameAppFolder();
     await _updateMelosScripts();
 
     if (config.includeArona && config.aronaConfig != null) {
@@ -70,7 +77,7 @@ class ProjectRenamer {
     if (config.includeArona && config.aronaConfig != null) {
       await _generateVsCodeLaunchJson();
       await _generateAndroidStudioRunConfigs();
-      await _copyEnviedFile('apps/app');
+      await _copyEnviedFile('apps/$_appFolderName');
     }
 
     if (config.includePlana) {
@@ -86,7 +93,7 @@ class ProjectRenamer {
     print('Next steps:');
     var step = 1;
     if (config.includeArona) {
-      print('  $step. Edit ${cyan('apps/app/.envied')} with your API URLs');
+      print('  $step. Edit ${cyan('apps/$_appFolderName/.envied')} with your API URLs');
       step++;
     }
     if (config.includePlana) {
@@ -110,7 +117,7 @@ class ProjectRenamer {
 
     final workspaceLines = <String>[];
     workspaceLines.add('workspace:');
-    if (config.includeArona) workspaceLines.add('  - apps/app');
+    if (config.includeArona) workspaceLines.add('  - apps/$_appFolderName');
     if (config.includePlana) workspaceLines.add('  - api_server');
     if (config.includeArisu) workspaceLines.add('  - landing_page_ssr');
     workspaceLines.add('  - packages/shared');
@@ -118,6 +125,24 @@ class ProjectRenamer {
     content = content.replaceAllMapped(RegExp(r'workspace:\n(  - [^\n]+\n)+'), (match) => '${workspaceLines.join('\n')}\n');
 
     File(pubspecPath).writeAsStringSync(content);
+  }
+
+  Future<void> _renameAppFolder() async {
+    if (!config.includeArona) return;
+
+    final oldPath = p.join(rootPath, 'apps', 'app');
+    final newPath = _appPath;
+
+    if (oldPath == newPath) {
+      print('📁 App folder already named: apps/$_appFolderName');
+      return;
+    }
+
+    final oldDir = Directory(oldPath);
+    if (oldDir.existsSync()) {
+      print('📁 Renaming app folder: apps/app → apps/$_appFolderName');
+      oldDir.renameSync(newPath);
+    }
   }
 
   Future<void> _updateMelosScripts() async {
@@ -185,30 +210,30 @@ class ProjectRenamer {
 
     final aronaConfig = config.aronaConfig!;
 
-    final appPubspecPath = p.join(rootPath, 'apps', 'app', 'pubspec.yaml');
+    final appPubspecPath = p.join(_appPath, 'pubspec.yaml');
     var content = File(appPubspecPath).readAsStringSync();
     content = content.replaceFirst('name: arona', 'name: ${aronaConfig.packageName}');
     File(appPubspecPath).writeAsStringSync(content);
 
     // Update imports in all Dart files
-    await _replaceInDartFiles(p.join(rootPath, 'apps', 'app'), "import 'package:arona/", "import 'package:${aronaConfig.packageName}/");
+    await _replaceInDartFiles(_appPath, "import 'package:arona/", "import 'package:${aronaConfig.packageName}/");
 
-    final buildGradlePath = p.join(rootPath, 'apps', 'app', 'android', 'app', 'build.gradle');
+    final buildGradlePath = p.join(_appPath, 'android', 'app', 'build.gradle');
     var gradleContent = File(buildGradlePath).readAsStringSync();
     gradleContent = gradleContent.replaceAll('com.arona.app', aronaConfig.bundleIdBase);
     File(buildGradlePath).writeAsStringSync(gradleContent);
 
-    final manifestPath = p.join(rootPath, 'apps', 'app', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+    final manifestPath = p.join(_appPath, 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
     var manifestContent = File(manifestPath).readAsStringSync();
     manifestContent = manifestContent.replaceAll('android:label="Arona"', 'android:label="${aronaConfig.displayName}"');
     File(manifestPath).writeAsStringSync(manifestContent);
 
-    final pbxprojPath = p.join(rootPath, 'apps', 'app', 'ios', 'Runner.xcodeproj', 'project.pbxproj');
+    final pbxprojPath = p.join(_appPath, 'ios', 'Runner.xcodeproj', 'project.pbxproj');
     var pbxContent = File(pbxprojPath).readAsStringSync();
     pbxContent = pbxContent.replaceAll('com.arona.app', aronaConfig.bundleIdBase);
     File(pbxprojPath).writeAsStringSync(pbxContent);
 
-    final infoPlistPath = p.join(rootPath, 'apps', 'app', 'ios', 'Runner', 'Info.plist');
+    final infoPlistPath = p.join(_appPath, 'ios', 'Runner', 'Info.plist');
     var plistContent = File(infoPlistPath).readAsStringSync();
     plistContent = plistContent.replaceAll('<string>Arona</string>', '<string>${aronaConfig.displayName}</string>');
     plistContent = plistContent.replaceAll('<string>arona</string>', '<string>${aronaConfig.packageName}</string>');
@@ -218,7 +243,7 @@ class ProjectRenamer {
   }
 
   Future<void> _renameKotlinPackage(String newPackage) async {
-    final oldKotlinPath = p.join(rootPath, 'apps', 'app', 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example', 'mercenary');
+    final oldKotlinPath = p.join(_appPath, 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example', 'mercenary');
     final mainActivityPath = p.join(oldKotlinPath, 'MainActivity.kt');
 
     if (File(mainActivityPath).existsSync()) {
@@ -226,12 +251,12 @@ class ProjectRenamer {
       content = content.replaceFirst(RegExp(r'package [^\n]+'), 'package $newPackage');
 
       final packageParts = newPackage.split('.');
-      final newKotlinPath = p.joinAll([rootPath, 'apps', 'app', 'android', 'app', 'src', 'main', 'kotlin', ...packageParts]);
+      final newKotlinPath = p.joinAll([_appPath, 'android', 'app', 'src', 'main', 'kotlin', ...packageParts]);
 
       Directory(newKotlinPath).createSync(recursive: true);
       File(p.join(newKotlinPath, 'MainActivity.kt')).writeAsStringSync(content);
 
-      Directory(p.join(rootPath, 'apps', 'app', 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example')).deleteSync(recursive: true);
+      Directory(p.join(_appPath, 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example')).deleteSync(recursive: true);
     }
   }
 
@@ -420,7 +445,7 @@ class ProjectRenamer {
   Future<void> _removeUnselectedComponents() async {
     if (!config.includeArona) {
       print('🗑️  Removing app folder...');
-      final appDir = Directory(p.join(rootPath, 'apps', 'app'));
+      final appDir = Directory(_appPath);
       if (appDir.existsSync()) appDir.deleteSync(recursive: true);
     }
 
@@ -488,7 +513,7 @@ flavorizr:
         bundleId: "${aronaConfig.bundleIdBase}"
 ''';
 
-    final appPubspecPath = p.join(rootPath, 'apps', 'app', 'pubspec.yaml');
+    final appPubspecPath = p.join(_appPath, 'pubspec.yaml');
     var content = File(appPubspecPath).readAsStringSync();
 
     if (!content.contains('flutter_flavorizr:')) {
@@ -534,7 +559,7 @@ flavorizr:
       final flavProcess = await Process.start(
         _dartExe,
         [..._dartPrefix, 'run', 'flutter_flavorizr'],
-        workingDirectory: p.join(rootPath, 'apps', 'app'),
+        workingDirectory: _appPath,
         mode: ProcessStartMode.inheritStdio,
         runInShell: true,
       );
@@ -579,7 +604,7 @@ flavorizr:
     final cleanProcess = await Process.start(
       _flutterExe,
       [..._flutterPrefix, 'clean'],
-      workingDirectory: p.join(rootPath, 'apps', 'app'),
+      workingDirectory: _appPath,
       mode: ProcessStartMode.inheritStdio,
       runInShell: true,
     );
@@ -587,8 +612,8 @@ flavorizr:
 
     // Remove gradle cache manually if on macOS/Linux
     if (!Platform.isWindows) {
-      final buildDir = Directory(p.join(rootPath, 'apps', 'app', 'build'));
-      final gradleDir = Directory(p.join(rootPath, 'apps', 'app', 'android', '.gradle'));
+      final buildDir = Directory(p.join(_appPath, 'build'));
+      final gradleDir = Directory(p.join(_appPath, 'android', '.gradle'));
 
       if (buildDir.existsSync()) {
         buildDir.deleteSync(recursive: true);
@@ -610,7 +635,7 @@ flavorizr:
       var content = File(examplePath).readAsStringSync();
 
       // Auto-detect LAN IP for physical device testing
-      if (folder == 'apps/app') {
+      if (folder.startsWith('apps/')) {
         final lanIp = await _getLanIpAddress();
         if (lanIp != null) {
           print('📡 Detected LAN IP: $lanIp');
@@ -672,42 +697,42 @@ flavorizr:
       "name": "${aronaConfig.displayName} Local (Debug)",
       "request": "launch",
       "type": "dart",
-      "program": "apps/app/lib/main.dart",
+      "program": "apps/$_appFolderName/lib/main.dart",
       "args": ["--flavor", "local", "--target", "lib/main.dart"]
     },
     {
       "name": "${aronaConfig.displayName} Local (Release)",
       "request": "launch",
       "type": "dart",
-      "program": "apps/app/lib/main.dart",
+      "program": "apps/$_appFolderName/lib/main.dart",
       "args": ["--flavor", "local", "--target", "lib/main.dart", "--release"]
     },
     {
       "name": "${aronaConfig.displayName} Dev (Debug)",
       "request": "launch",
       "type": "dart",
-      "program": "apps/app/lib/main.dart",
+      "program": "apps/$_appFolderName/lib/main.dart",
       "args": ["--flavor", "dev", "--target", "lib/main.dart"]
     },
     {
       "name": "${aronaConfig.displayName} Dev (Release)",
       "request": "launch",
       "type": "dart",
-      "program": "apps/app/lib/main.dart",
+      "program": "apps/$_appFolderName/lib/main.dart",
       "args": ["--flavor", "dev", "--target", "lib/main.dart", "--release"]
     },
     {
       "name": "${aronaConfig.displayName} Prod (Debug)",
       "request": "launch",
       "type": "dart",
-      "program": "apps/app/lib/main.dart",
+      "program": "apps/$_appFolderName/lib/main.dart",
       "args": ["--flavor", "prod", "--target", "lib/main.dart"]
     },
     {
       "name": "${aronaConfig.displayName} Prod (Release)",
       "request": "launch",
       "type": "dart",
-      "program": "apps/app/lib/main.dart",
+      "program": "apps/$_appFolderName/lib/main.dart",
       "args": ["--flavor", "prod", "--target", "lib/main.dart", "--release"]
     }
   ]
@@ -745,7 +770,7 @@ flavorizr:
       final configXml = '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
-    <option name="filePath" value="\$PROJECT_DIR\$/apps/app/lib/main.dart" />
+    <option name="filePath" value="\$PROJECT_DIR\$/apps/$_appFolderName/lib/main.dart" />
     <method v="2" />
   </configuration>
 </component>
@@ -756,7 +781,7 @@ flavorizr:
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Release)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
     <option name="additionalArgs" value="--release" />
-    <option name="filePath" value="\$PROJECT_DIR\$/apps/app/lib/main.dart" />
+    <option name="filePath" value="\$PROJECT_DIR\$/apps/$_appFolderName/lib/main.dart" />
     <method v="2" />
   </configuration>
 </component>
