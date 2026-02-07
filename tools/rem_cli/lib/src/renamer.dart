@@ -602,19 +602,6 @@ flavorizr:
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "${aronaConfig.displayName} (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "app/lib/main.dart"
-    },
-    {
-      "name": "${aronaConfig.displayName} (Release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "app/lib/main.dart",
-      "args": ["--release"]
-    },
-    {
       "name": "${aronaConfig.displayName} Local (Debug)",
       "request": "launch",
       "type": "dart",
@@ -672,29 +659,7 @@ flavorizr:
       runDir.createSync(recursive: true);
     }
 
-    // No-flavor configurations (default)
-    final defaultDebugXml =
-        '''<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="${aronaConfig.displayName} (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="filePath" value="\$PROJECT_DIR\$/app/lib/main.dart" />
-    <method v="2" />
-  </configuration>
-</component>
-''';
-    File(p.join(runDir.path, '${aronaConfig.packageName}_debug.run.xml')).writeAsStringSync(defaultDebugXml);
-
-    final defaultReleaseXml =
-        '''<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="${aronaConfig.displayName} (Release)" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="additionalArgs" value="--release" />
-    <option name="filePath" value="\$PROJECT_DIR\$/app/lib/main.dart" />
-    <method v="2" />
-  </configuration>
-</component>
-''';
-    File(p.join(runDir.path, '${aronaConfig.packageName}_release.run.xml')).writeAsStringSync(defaultReleaseXml);
-
-    // Flavor-specific configurations
+    // Flavor-specific configurations only (no-flavor configs won't work with flavorizr)
     final flavors = ['local', 'dev', 'prod'];
 
     for (final flavor in flavors) {
