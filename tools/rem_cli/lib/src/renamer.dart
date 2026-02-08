@@ -139,6 +139,21 @@ class ProjectRenamer {
     }
 
     final oldDir = Directory(oldPath);
+    final newDir = Directory(newPath);
+
+    // If target already exists
+    if (newDir.existsSync()) {
+      if (oldDir.existsSync()) {
+        // Both exist - delete the incomplete target and rename source
+        print('📁 Cleaning up incomplete target folder: apps/$_appFolderName');
+        newDir.deleteSync(recursive: true);
+      } else {
+        // Only target exists - already renamed, skip
+        print('📁 App folder already exists: apps/$_appFolderName');
+        return;
+      }
+    }
+
     if (oldDir.existsSync()) {
       print('📁 Renaming app folder: apps/app → apps/$_appFolderName');
       oldDir.renameSync(newPath);
