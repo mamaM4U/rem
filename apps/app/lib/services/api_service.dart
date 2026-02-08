@@ -1,6 +1,7 @@
-import 'dart:io';
+import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:requests_inspector/requests_inspector.dart';
 
 import '../env/env.dart';
@@ -15,6 +16,10 @@ class ApiService {
 
   /// Get the appropriate base URL based on platform and device type
   static String get baseUrl {
+    if (kIsWeb) {
+      return Env.API_BASE_URL_WEB; // localhost for web
+    }
+
     if (Platform.isAndroid) {
       // Check if it's emulator or physical device
       if (DeviceDetector.isAndroidEmulator()) {
@@ -25,7 +30,7 @@ class ApiService {
     } else if (Platform.isIOS) {
       return Env.API_BASE_URL_IOS; // localhost for iOS simulator
     } else {
-      return Env.API_BASE_URL_WEB; // localhost for web/desktop
+      return Env.API_BASE_URL_WEB; // localhost for desktop
     }
   }
 
@@ -35,21 +40,12 @@ class ApiService {
         baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       ),
     );
 
     // Add interceptors
-    _dio.interceptors.addAll([
-      RequestsInspectorInterceptor(),
-      LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-      ),
-    ]);
+    _dio.interceptors.addAll([RequestsInspectorInterceptor(), LogInterceptor(requestBody: true, responseBody: true)]);
   }
 
   Dio get dio => _dio;
