@@ -255,6 +255,39 @@ class ProjectRenamer {
     File(infoPlistPath).writeAsStringSync(plistContent);
 
     await _renameKotlinPackage(aronaConfig.bundleIdBase);
+    await _updateWebFiles(aronaConfig);
+  }
+
+  Future<void> _updateWebFiles(AronaConfig aronaConfig) async {
+    final webDir = Directory(p.join(_appPath, 'web'));
+    if (!webDir.existsSync()) {
+      print('📁 Web folder not found, skipping web updates...');
+      return;
+    }
+
+    print('📁 Updating web files...');
+
+    // Update index.html
+    final indexPath = p.join(_appPath, 'web', 'index.html');
+    if (File(indexPath).existsSync()) {
+      var indexContent = File(indexPath).readAsStringSync();
+      indexContent = indexContent.replaceAll('<title>arona</title>', '<title>${aronaConfig.displayName}</title>');
+      indexContent = indexContent.replaceAll(
+          'apple-mobile-web-app-title" content="arona"', 'apple-mobile-web-app-title" content="${aronaConfig.displayName}"');
+      indexContent = indexContent.replaceAll('content="A new Flutter project."', 'content="${aronaConfig.displayName}"');
+      File(indexPath).writeAsStringSync(indexContent);
+    }
+
+    // Update manifest.json
+    final manifestPath = p.join(_appPath, 'web', 'manifest.json');
+    if (File(manifestPath).existsSync()) {
+      var manifestContent = File(manifestPath).readAsStringSync();
+      manifestContent = manifestContent.replaceAll('"name": "arona"', '"name": "${aronaConfig.displayName}"');
+      manifestContent = manifestContent.replaceAll('"short_name": "arona"', '"short_name": "${aronaConfig.displayName}"');
+      manifestContent =
+          manifestContent.replaceAll('"description": "A new Flutter project."', '"description": "${aronaConfig.displayName}"');
+      File(manifestPath).writeAsStringSync(manifestContent);
+    }
   }
 
   Future<void> _renameKotlinPackage(String newPackage) async {
