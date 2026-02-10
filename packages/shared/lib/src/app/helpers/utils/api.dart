@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:requests_inspector/requests_inspector.dart';
-import 'package:arona/env/env.dart';
-import 'package:arona/helpers/utils/logging_interceptor.dart';
-import 'package:arona/helpers/utils/device_detector.dart';
+import '../../env/env.dart';
+import '../../helpers/utils/logging_interceptor.dart';
+import '../../helpers/utils/device_detector.dart';
 
 class Api {
   final dio = createDio();

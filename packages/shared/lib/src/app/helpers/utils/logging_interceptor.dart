@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:arona/constants/http.dart';
+import '../../constants/http.dart';
 
 class LoggingInterceptor extends Interceptor {
   @override

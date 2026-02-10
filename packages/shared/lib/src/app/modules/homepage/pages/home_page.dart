@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:arona/constants/colors.dart';
-import 'package:arona/helpers/dev_print.dart';
-import 'package:arona/modules/homepage/controllers/homepage_controller.dart';
-import 'package:arona/widgets/listview_widget.dart';
+import '../../../constants/colors.dart';
+import '../../../helpers/dev_print.dart';
+import '../../../modules/homepage/controllers/homepage_controller.dart';
+import '../../../widgets/listview_widget.dart';
 
 class HomePage extends StatelessWidget {
   final HomepageController _homepageController = Get.isRegistered<HomepageController>() ? Get.find() : Get.put(HomepageController());

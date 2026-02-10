@@ -54,7 +54,7 @@ class ProjectRenamer {
     print('');
 
     await _updateRootPubspec();
-    await _renameAppFolder();
+    await _createAppFromExample();
     await _updateMelosScripts();
 
     if (config.includeArona && config.aronaConfig != null) {
@@ -117,7 +117,10 @@ class ProjectRenamer {
 
     final workspaceLines = <String>[];
     workspaceLines.add('workspace:');
-    if (config.includeArona) workspaceLines.add('  - apps/$_appFolderName');
+    if (config.includeArona) {
+      workspaceLines.add('  - apps/example_app');
+      workspaceLines.add('  - apps/$_appFolderName');
+    }
     if (config.includePlana) workspaceLines.add('  - api_server');
     if (config.includeArisu) workspaceLines.add('  - landing_page_ssr');
     workspaceLines.add('  - packages/shared');
@@ -127,36 +130,39 @@ class ProjectRenamer {
     File(pubspecPath).writeAsStringSync(content);
   }
 
-  Future<void> _renameAppFolder() async {
+  Future<void> _createAppFromExample() async {
     if (!config.includeArona) return;
 
-    final oldPath = p.join(rootPath, 'apps', 'app');
+    final examplePath = p.join(rootPath, 'apps', 'example_app');
     final newPath = _appPath;
 
-    if (oldPath == newPath) {
-      print('📁 App folder already named: apps/$_appFolderName');
+    if (Directory(newPath).existsSync()) {
+      print('📁 App folder already exists: apps/$_appFolderName');
       return;
     }
 
-    final oldDir = Directory(oldPath);
-    final newDir = Directory(newPath);
-
-    // If target already exists
-    if (newDir.existsSync()) {
-      if (oldDir.existsSync()) {
-        // Both exist - delete the incomplete target and rename source
-        print('📁 Cleaning up incomplete target folder: apps/$_appFolderName');
-        newDir.deleteSync(recursive: true);
-      } else {
-        // Only target exists - already renamed, skip
-        print('📁 App folder already exists: apps/$_appFolderName');
-        return;
-      }
+    if (!Directory(examplePath).existsSync()) {
+      print('⚠️  example_app not found, skipping app creation');
+      return;
     }
 
-    if (oldDir.existsSync()) {
-      print('📁 Renaming app folder: apps/app → apps/$_appFolderName');
-      oldDir.renameSync(newPath);
+    print('📁 Creating app from example: apps/example_app → apps/$_appFolderName');
+    await _copyDirectory(Directory(examplePath), Directory(newPath));
+  }
+
+  /// Recursively copy a directory
+  Future<void> _copyDirectory(Directory source, Directory destination) async {
+    destination.createSync(recursive: true);
+    await for (final entity in source.list(recursive: false)) {
+      final newPath = p.join(destination.path, p.basename(entity.path));
+      if (entity is Directory) {
+        // Skip .dart_tool and build directories
+        final name = p.basename(entity.path);
+        if (name == '.dart_tool' || name == 'build') continue;
+        await _copyDirectory(entity, Directory(newPath));
+      } else if (entity is File) {
+        entity.copySync(newPath);
+      }
     }
   }
 
@@ -492,9 +498,16 @@ class ProjectRenamer {
 
   Future<void> _removeUnselectedComponents() async {
     if (!config.includeArona) {
-      print('🗑️  Removing app folder...');
-      final appDir = Directory(_appPath);
+      print('🗑️  Removing app template and shared app code...');
+      // Remove the example_app (reference app)
+      final appDir = Directory(p.join(rootPath, 'apps', 'example_app'));
       if (appDir.existsSync()) appDir.deleteSync(recursive: true);
+      // Remove the shared app code
+      final sharedAppDir = Directory(p.join(rootPath, 'packages', 'shared', 'lib', 'src', 'app'));
+      if (sharedAppDir.existsSync()) sharedAppDir.deleteSync(recursive: true);
+      // Remove the barrel export
+      final appBarrel = File(p.join(rootPath, 'packages', 'shared', 'lib', 'app.dart'));
+      if (appBarrel.existsSync()) appBarrel.deleteSync();
     }
 
     if (!config.includePlana) {

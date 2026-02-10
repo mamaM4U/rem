@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:arona/helpers/dev_print.dart';
-import 'package:arona/modules/homepage/services/homepage_service.dart';
+import '../../../helpers/dev_print.dart';
+import '../../../modules/homepage/services/homepage_service.dart';
 
 class HomepageController extends GetxController {
   final HomepageService homepageService = Get.find();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:requests_inspector/requests_inspector.dart';
 
@@ -9,18 +8,8 @@ import 'routes/routes.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Set status bar style
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  );
-
+/// Initialize the app (device detection, API service, auth)
+Future<void> initApp() async {
   // Initialize device detection (must be before ApiService)
   await DeviceDetector.init();
 
@@ -31,10 +20,9 @@ Future<void> main() async {
   if (token != null) {
     apiService.setAuthToken(token);
   }
-
-  runApp(const MyApp());
 }
 
+/// Main app widget - wraps GetMaterialApp with RequestsInspector
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -45,10 +33,7 @@ class MyApp extends StatelessWidget {
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Rem App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        ),
+        theme: ThemeData(useMaterial3: true, colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
         initialRoute: HOME_PAGE.path,
         getPages: pages(),
       ),

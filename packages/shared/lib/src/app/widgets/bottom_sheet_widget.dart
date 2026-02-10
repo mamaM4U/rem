@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:arona/constants/colors.dart';
+import '../constants/colors.dart';
 
 class BottomSheetWidget extends StatelessWidget {
   final Widget content;
