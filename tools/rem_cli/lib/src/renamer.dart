@@ -78,6 +78,7 @@ class ProjectRenamer {
       await _generateVsCodeLaunchJson();
       await _generateAndroidStudioRunConfigs();
       await _copyEnviedFile('apps/$_appFolderName');
+      await _copyEnviedFile('packages/shared');
     }
 
     if (config.includePlana) {
@@ -755,6 +756,12 @@ flavorizr:
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Example App (Debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/example_app/lib/main.dart"
+    },
+    {
       "name": "${aronaConfig.displayName} Local (Debug)",
       "request": "launch",
       "type": "dart",
@@ -822,6 +829,16 @@ flavorizr:
     if (!runDir.existsSync()) {
       runDir.createSync(recursive: true);
     }
+
+    // Example app (no-flavor) configuration
+    final exampleConfigXml = '''<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Example App (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="filePath" value="\$PROJECT_DIR\$/apps/example_app/lib/main.dart" />
+    <method v="2" />
+  </configuration>
+</component>
+''';
+    File(p.join(runDir.path, 'example_app_debug.run.xml')).writeAsStringSync(exampleConfigXml);
 
     // Flavor-specific configurations only (no-flavor configs won't work with flavorizr)
     final flavors = ['local', 'dev', 'prod'];
