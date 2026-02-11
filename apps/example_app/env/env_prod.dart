@@ -2,7 +2,7 @@
 import 'package:envied/envied.dart';
 part 'env_prod.g.dart';
 
-@Envied(path: 'packages/shared/lib/src/app/.envied.prod')
+@Envied(path: '.envied.prod')
 abstract class EnvProd {
   @EnviedField(obfuscate: true)
   static String API_BASE_URL_EMULATOR = _EnvProd.API_BASE_URL_EMULATOR;
