@@ -75,10 +75,10 @@ class ProjectRenamer {
     await _setupFlavorizr();
 
     if (config.includeArona && config.aronaConfig != null) {
-      await _generateVsCodeLaunchJson();
+      await _generateVsCodeConfigs();
       await _generateAndroidStudioRunConfigs();
-      await _copyEnviedFile('apps/$_appFolderName');
-      await _copyEnviedFile('packages/shared');
+      await _copyEnviedFiles('apps/example_app');
+      await _copyEnviedFiles('apps/$_appFolderName');
     }
 
     if (config.includePlana) {
@@ -88,21 +88,26 @@ class ProjectRenamer {
     // Run bootstrap and setup commands
     await _runBootstrapAndSetup();
 
+    // Generate per-app env.g.dart files and set default
+    if (config.includeArona && config.aronaConfig != null) {
+      await _generateEnvPerApp();
+    }
+
     print('');
     print('${green('✅ Project initialized successfully!')}');
     print('');
     print('Next steps:');
     var step = 1;
     if (config.includeArona) {
-      print('  $step. Edit ${cyan('apps/$_appFolderName/.envied')} with your API URLs');
+      print('  $step. Edit ${cyan('apps/$_appFolderName/.envied.*')} with your API URLs');
       step++;
     }
     if (config.includePlana) {
       print('  $step. Edit ${cyan('api_server/.envied')} with your database config');
       step++;
     }
-    print('  $step. Regenerate code after editing .envied:');
-    print('     ${cyan('melos build:runner')}');
+    print('  $step. Regenerate env after editing .envied files:');
+    print('     ${cyan('melos run build:env:$_appFolderName')}');
     step++;
     print('');
   }
@@ -138,8 +143,14 @@ class ProjectRenamer {
     final newPath = _appPath;
 
     if (Directory(newPath).existsSync()) {
-      print('📁 App folder already exists: apps/$_appFolderName');
-      return;
+      // Check if it's a complete app (has pubspec.yaml)
+      if (File(p.join(newPath, 'pubspec.yaml')).existsSync()) {
+        print('📁 App folder already exists: apps/$_appFolderName');
+        return;
+      }
+      // Incomplete from previous failed run - clean up
+      print('📁 Cleaning up incomplete app folder: apps/$_appFolderName');
+      Directory(newPath).deleteSync(recursive: true);
     }
 
     if (!Directory(examplePath).existsSync()) {
@@ -173,6 +184,7 @@ class ProjectRenamer {
     final pubspecPath = p.join(rootPath, 'pubspec.yaml');
     var content = File(pubspecPath).readAsStringSync();
 
+    // Update scopes
     if (config.includeArona && config.aronaConfig != null) {
       content = content.replaceAll('scope: arona', 'scope: ${config.aronaConfig!.packageName}');
     }
@@ -183,6 +195,34 @@ class ProjectRenamer {
       content = content.replaceAll('scope: arisu', 'scope: ${config.arisuConfig!.packageName}');
     }
 
+    // Add build:env scripts for each app
+    if (config.includeArona) {
+      final buildEnvScripts = '''
+    # Generate env for example_app
+    build:env:example_app:
+      run: |
+        cp apps/example_app/.envied.* packages/shared/lib/src/app/
+        cp -r apps/example_app/env/ packages/shared/lib/src/app/env/
+        melos exec --scope="shared" -- dart run build_runner build --delete-conflicting-outputs
+        cp packages/shared/lib/src/app/env/env_*.g.dart apps/example_app/env/
+      description: Generate env files for example_app
+
+    # Generate env for $_appFolderName
+    build:env:$_appFolderName:
+      run: |
+        cp apps/$_appFolderName/.envied.* packages/shared/lib/src/app/
+        cp -r apps/$_appFolderName/env/ packages/shared/lib/src/app/env/
+        melos exec --scope="shared" -- dart run build_runner build --delete-conflicting-outputs
+        cp packages/shared/lib/src/app/env/env_*.g.dart apps/$_appFolderName/env/
+      description: Generate env files for $_appFolderName
+''';
+      // Insert before the last scripts key or append to scripts
+      if (content.contains('scripts:')) {
+        content = content.replaceFirst('scripts:', 'scripts:\n$buildEnvScripts');
+      }
+    }
+
+    // Remove unused scripts
     if (!config.includeArona) {
       content = _removeMelosScript(content, 'arona');
     }
@@ -694,24 +734,43 @@ flavorizr:
 
     if (File(examplePath).existsSync() && !File(targetPath).existsSync()) {
       print('📁 Copying $folder/.envied.example to $folder/.envied...');
-      var content = File(examplePath).readAsStringSync();
-
-      // Auto-detect LAN IP for physical device testing
-      if (folder.startsWith('apps/')) {
-        final lanIp = await _getLanIpAddress();
-        if (lanIp != null) {
-          print('📡 Detected LAN IP: $lanIp');
-          content = content.replaceAll('API_BASE_URL_PHYSICAL=http://192.168.1.100:8080', 'API_BASE_URL_PHYSICAL=http://$lanIp:8080');
-        }
-
-        // Enable demo mode if API server is not included
-        if (!config.includePlana) {
-          print('🎭 Enabling demo mode (API server not included)');
-          content = content.replaceAll('DEMO_MODE=false', 'DEMO_MODE=true');
-        }
-      }
-
+      final content = File(examplePath).readAsStringSync();
       File(targetPath).writeAsStringSync(content);
+    }
+  }
+
+  /// Copy .envied.*.example → .envied.* for each flavor (local, dev, prod)
+  Future<void> _copyEnviedFiles(String folder) async {
+    final flavors = ['local', 'dev', 'prod'];
+
+    for (final flavor in flavors) {
+      final examplePath = p.join(rootPath, folder, '.envied.$flavor.example');
+      final targetPath = p.join(rootPath, folder, '.envied.$flavor');
+
+      if (File(examplePath).existsSync() && !File(targetPath).existsSync()) {
+        print('📁 Copying $folder/.envied.$flavor.example → .envied.$flavor');
+        var content = File(examplePath).readAsStringSync();
+
+        // Auto-detect LAN IP for local flavor
+        if (flavor == 'local' && folder.startsWith('apps/')) {
+          final lanIp = await _getLanIpAddress();
+          if (lanIp != null) {
+            print('📡 Detected LAN IP: $lanIp');
+            content = content.replaceAll(
+              'API_BASE_URL_PHYSICAL=http://192.168.1.100:8080',
+              'API_BASE_URL_PHYSICAL=http://$lanIp:8080',
+            );
+          }
+
+          // Enable demo mode if API server is not included
+          if (!config.includePlana) {
+            print('🎭 Enabling demo mode (API server not included)');
+            content = content.replaceAll('DEMO_MODE=false', 'DEMO_MODE=true');
+          }
+        }
+
+        File(targetPath).writeAsStringSync(content);
+      }
     }
   }
 
@@ -743,8 +802,80 @@ flavorizr:
     return false;
   }
 
-  Future<void> _generateVsCodeLaunchJson() async {
-    print('📁 Generating VS Code launch.json...');
+  /// Generate per-app env: for each app, copy env to shared, build, save .g.dart back
+  Future<void> _generateEnvPerApp() async {
+    final sharedAppDir = p.join(rootPath, 'packages', 'shared', 'lib', 'src', 'app');
+    final sharedEnvDir = p.join(sharedAppDir, 'env');
+    final flavors = ['local', 'dev', 'prod'];
+
+    final apps = ['apps/$_appFolderName', 'apps/example_app'];
+
+    for (final app in apps) {
+      final appDir = p.join(rootPath, app);
+      final appEnvDir = p.join(appDir, 'env');
+
+      print('🔑 Generating env for $app...');
+
+      // Copy .envied.* to packages/shared/lib/src/app/
+      for (final flavor in flavors) {
+        final enviedFile = File(p.join(appDir, '.envied.$flavor'));
+        if (enviedFile.existsSync()) {
+          enviedFile.copySync(p.join(sharedAppDir, '.envied.$flavor'));
+        }
+      }
+
+      // Copy env/ folder to packages/shared/lib/src/app/env/
+      final envDir = Directory(appEnvDir);
+      if (envDir.existsSync()) {
+        // Clean shared env dir first
+        final sharedEnv = Directory(sharedEnvDir);
+        if (sharedEnv.existsSync()) sharedEnv.deleteSync(recursive: true);
+        await _copyDirectory(envDir, sharedEnv);
+      }
+
+      // Run build_runner
+      final process = await Process.start(
+        _melosCmd,
+        ['run', 'build:runner'],
+        workingDirectory: rootPath,
+        mode: ProcessStartMode.inheritStdio,
+        runInShell: true,
+      );
+      final exitCode = await process.exitCode;
+
+      // Save generated .g.dart files back to app
+      if (exitCode == 0) {
+        for (final flavor in flavors) {
+          final gFile = File(p.join(sharedEnvDir, 'env_$flavor.g.dart'));
+          if (gFile.existsSync()) {
+            gFile.copySync(p.join(appEnvDir, 'env_$flavor.g.dart'));
+          }
+        }
+        print('✅ env generated for $app');
+      } else {
+        print('${yellow('⚠️  build_runner failed for $app, .g.dart files may be missing')}');
+      }
+    }
+
+    // Set example_app as default in shared
+    print('🔑 Setting default env to apps/example_app...');
+    final exampleDir = p.join(rootPath, 'apps', 'example_app');
+    for (final flavor in flavors) {
+      final enviedFile = File(p.join(exampleDir, '.envied.$flavor'));
+      if (enviedFile.existsSync()) {
+        enviedFile.copySync(p.join(sharedAppDir, '.envied.$flavor'));
+      }
+    }
+    final exampleEnvDir = Directory(p.join(exampleDir, 'env'));
+    if (exampleEnvDir.existsSync()) {
+      final sharedEnv = Directory(sharedEnvDir);
+      if (sharedEnv.existsSync()) sharedEnv.deleteSync(recursive: true);
+      await _copyDirectory(exampleEnvDir, sharedEnv);
+    }
+  }
+
+  Future<void> _generateVsCodeConfigs() async {
+    print('📁 Generating VS Code configs...');
 
     final aronaConfig = config.aronaConfig!;
     final vscodeDir = Directory(p.join(rootPath, '.vscode'));
@@ -752,72 +883,71 @@ flavorizr:
       vscodeDir.createSync(recursive: true);
     }
 
-    final launchJson = '''{
-  "version": "0.2.0",
-  "configurations": [
+    // Generate tasks.json — copy .envied.* + env/ to shared
+    final tasksJson = '''{
+  "version": "2.0.0",
+  "tasks": [
     {
-      "name": "Example App (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/example_app/lib/main.dart"
+      "label": "env:example_app",
+      "type": "shell",
+      "command": "cp apps/example_app/.envied.* packages/shared/lib/src/app/ && cp -r apps/example_app/env/ packages/shared/lib/src/app/env/",
+      "presentation": { "reveal": "silent" }
     },
     {
-      "name": "${aronaConfig.displayName} Local (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/$_appFolderName/lib/main.dart",
-      "args": ["--flavor", "local", "--target", "lib/main.dart"]
-    },
-    {
-      "name": "${aronaConfig.displayName} Local (Release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/$_appFolderName/lib/main.dart",
-      "args": ["--flavor", "local", "--target", "lib/main.dart", "--release"]
-    },
-    {
-      "name": "${aronaConfig.displayName} Dev (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/$_appFolderName/lib/main.dart",
-      "args": ["--flavor", "dev", "--target", "lib/main.dart"]
-    },
-    {
-      "name": "${aronaConfig.displayName} Dev (Release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/$_appFolderName/lib/main.dart",
-      "args": ["--flavor", "dev", "--target", "lib/main.dart", "--release"]
-    },
-    {
-      "name": "${aronaConfig.displayName} Prod (Debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/$_appFolderName/lib/main.dart",
-      "args": ["--flavor", "prod", "--target", "lib/main.dart"]
-    },
-    {
-      "name": "${aronaConfig.displayName} Prod (Release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "apps/$_appFolderName/lib/main.dart",
-      "args": ["--flavor", "prod", "--target", "lib/main.dart", "--release"]
+      "label": "env:$_appFolderName",
+      "type": "shell",
+      "command": "cp apps/$_appFolderName/.envied.* packages/shared/lib/src/app/ && cp -r apps/$_appFolderName/env/ packages/shared/lib/src/app/env/",
+      "presentation": { "reveal": "silent" }
     }
   ]
 }
 ''';
+    File(p.join(vscodeDir.path, 'tasks.json')).writeAsStringSync(tasksJson);
 
+    // Helper to generate 6 configs (Local/Dev/Prod × Debug/Release) for an app
+    String appConfigs(String name, String program, String taskLabel) {
+      final flavors = [
+        {'flavor': 'local', 'label': 'Local'},
+        {'flavor': 'dev', 'label': 'Dev'},
+        {'flavor': 'prod', 'label': 'Prod'},
+      ];
+      final configs = <String>[];
+      for (final f in flavors) {
+        for (final release in [false, true]) {
+          final suffix = release ? ' (Release)' : ' (Debug)';
+          final args = ['"--flavor"', '"${f['flavor']}"', '"--dart-define=FLAVOR=${f['flavor']}"', '"--target"', '"lib/main.dart"'];
+          if (release) args.add('"--release"');
+          configs.add('''    {
+      "name": "$name ${f['label']}$suffix",
+      "request": "launch",
+      "type": "dart",
+      "program": "$program",
+      "args": [${args.join(', ')}],
+      "preLaunchTask": "$taskLabel"
+    }''');
+        }
+      }
+      return configs.join(',\n');
+    }
+
+    final launchJson = '''{
+  "version": "0.2.0",
+  "configurations": [
+${appConfigs('Example App', 'apps/example_app/lib/main.dart', 'env:example_app')},
+${appConfigs(aronaConfig.displayName, 'apps/$_appFolderName/lib/main.dart', 'env:$_appFolderName')}
+  ]
+}
+''';
     File(p.join(vscodeDir.path, 'launch.json')).writeAsStringSync(launchJson);
 
     // Generate settings.json for FVM if FVM is detected
-    final settingsPath = p.join(vscodeDir.path, 'settings.json');
     if (useFvm) {
       print('📁 Generating VS Code settings.json for FVM...');
       final settingsJson = '''{
   "dart.flutterSdkPath": ".fvm/flutter_sdk"
 }
 ''';
-      File(settingsPath).writeAsStringSync(settingsJson);
+      File(p.join(vscodeDir.path, 'settings.json')).writeAsStringSync(settingsJson);
     }
   }
 

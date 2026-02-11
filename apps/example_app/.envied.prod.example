@@ -1,0 +1,14 @@
+# API Base URL for Android Emulator
+API_BASE_URL_EMULATOR=https://api.example.com
+
+# API Base URL for Android Physical Device
+API_BASE_URL_PHYSICAL=https://api.example.com
+
+# API Base URL for iOS Simulator
+API_BASE_URL_IOS=https://api.example.com
+
+# API Base URL for Web (browser)
+API_BASE_URL_WEB=https://api.example.com
+
+# Demo Mode
+DEMO_MODE=false

@@ -39,10 +39,14 @@ api_server/data/
 
 # Environment files
 .env
-.envied
+.envied*
 !.env.example
 !.envied.example
+!.envied.*.example
 !.env.docker
+
+# Generated env files
+env_*.g.dart
 
 # FVM Version Cache
 .fvm/
