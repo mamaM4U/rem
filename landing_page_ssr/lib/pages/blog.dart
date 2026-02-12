@@ -1,3 +1,4 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 
 import '../constants/theme.dart';
@@ -71,22 +72,22 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
     return div(classes: 'blog', [
       // Header
       section(classes: 'blog-hero', [
-        h1([text('Blog')]),
-        p([text('Latest posts from our API')]),
+        h1([Component.text('Blog')]),
+        p([Component.text('Latest posts from our API')]),
       ]),
 
       // Content
       section(classes: 'blog-content', [
         if (isLoading)
           div(classes: 'loading', [
-            p([text('Loading posts...')]),
+            p([Component.text('Loading posts...')]),
           ])
         else if (errorMessage != null)
           div(classes: 'error', [
-            p([text(errorMessage!)]),
+            p([Component.text(errorMessage!)]),
             p(classes: 'hint', [
-              text('Make sure Plana API server is running at '),
-              code([text(ApiService().baseUrl)]),
+              Component.text('Make sure Plana API server is running at '),
+              code([Component.text(ApiService().baseUrl)]),
             ]),
           ])
         else
@@ -108,9 +109,9 @@ class BlogState extends State<Blog> with PreloadStateMixin, SyncStateMixin<Blog,
           [],
         ),
       div(classes: 'post-content', [
-        h3([text(item.title)]),
-        p([text(item.subtitle)]),
-        span(classes: 'post-id', [text('#${item.id}')]),
+        h3([Component.text(item.title)]),
+        p([Component.text(item.subtitle)]),
+        span(classes: 'post-id', [Component.text('#${item.id}')]),
       ]),
     ]);
   }

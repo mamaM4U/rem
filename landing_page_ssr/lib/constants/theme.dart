@@ -1,4 +1,4 @@
-import 'package:jaspr/jaspr.dart';
+import 'package:jaspr/dom.dart';
 
 // Theme colors for Rem workspace landing page
 const primaryColor = Color('#6366f1'); // Indigo

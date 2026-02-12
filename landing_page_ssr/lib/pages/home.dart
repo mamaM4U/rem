@@ -1,3 +1,4 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 
 import '../constants/theme.dart';
@@ -12,8 +13,10 @@ class Home extends StatelessComponent {
       // Hero Section
       section(classes: 'hero', [
         div(classes: 'hero-content', [
-          h1([text('Rem Workspace')]),
-          p(classes: 'tagline', [text('A monorepo forged with Melos, uniting code-born twins under one structure.')]),
+          h1([Component.text('Rem Workspace')]),
+          p(classes: 'tagline', [
+            Component.text('A monorepo forged with Melos, uniting code-born twins under one structure.'),
+          ]),
           div(classes: 'badges', [
             _badge('Melos', '#f700ff'),
             _badge('Flutter', '#61DAFB'),
@@ -25,8 +28,10 @@ class Home extends StatelessComponent {
 
       // Projects Section
       section(classes: 'projects', [
-        h2([text('The Twins')]),
-        p(classes: 'section-desc', [text('Under Rem\'s guidance, the twins work in perfect harmony.')]),
+        h2([Component.text('The Twins')]),
+        p(classes: 'section-desc', [
+          Component.text('Under Rem\'s guidance, the twins work in perfect harmony.'),
+        ]),
         div(classes: 'cards', [
           _projectCard(
             'Arona',
@@ -50,10 +55,10 @@ class Home extends StatelessComponent {
       // Arisu Section
       section(classes: 'arisu-section', [
         div(classes: 'arisu-content', [
-          h2([text('Arisu')]),
-          p(classes: 'arisu-role', [text('Landing Page')]),
+          h2([Component.text('Arisu')]),
+          p(classes: 'arisu-role', [Component.text('Landing Page')]),
           p([
-            text(
+            Component.text(
               'The newest addition to the family. Built with Jaspr, '
               'Arisu serves as the welcoming face of the Rem workspace, '
               'presenting the project to the world with elegance.',
@@ -69,7 +74,7 @@ class Home extends StatelessComponent {
 
       // Tech Stack Section
       section(classes: 'stack', [
-        h2([text('Tech Stack')]),
+        h2([Component.text('Tech Stack')]),
         div(classes: 'stack-grid', [
           _stackItem('State Management', 'GetX for lightweight & reactive state'),
           _stackItem('HTTP Client', 'Dio with interceptors'),
@@ -83,13 +88,13 @@ class Home extends StatelessComponent {
       // Footer
       footer([
         p([
-          text('Built with '),
-          span(styles: Styles(color: accentColor), [text('Dart')]),
-          text(' by the Rem team'),
+          Component.text('Built with '),
+          span(styles: Styles(color: accentColor), [Component.text('Dart')]),
+          Component.text(' by the Rem team'),
         ]),
         p(classes: 'support', [
           a(href: 'https://palestine-liberation.org', target: Target.blank, [
-            text('Free Palestine'),
+            Component.text('Free Palestine'),
           ]),
         ]),
       ]),
@@ -100,7 +105,7 @@ class Home extends StatelessComponent {
     return span(
       classes: 'badge',
       styles: Styles(backgroundColor: Color(color)),
-      [text(label)],
+      [Component.text(label)],
     );
   }
 
@@ -110,27 +115,27 @@ class Home extends StatelessComponent {
         classes: 'card-header',
         styles: Styles(backgroundColor: color),
         [
-          h3([text(name)]),
-          span(classes: 'role', [text(role)]),
+          h3([Component.text(name)]),
+          span(classes: 'role', [Component.text(role)]),
         ],
       ),
       div(classes: 'card-body', [
-        p([text(description)]),
+        p([Component.text(description)]),
         div(classes: 'tech-list', [
-          for (var t in tech) span(classes: 'tech', [text(t)]),
+          for (var t in tech) span(classes: 'tech', [Component.text(t)]),
         ]),
       ]),
     ]);
   }
 
   Component _techBadge(String label) {
-    return span(classes: 'tech-badge', [text(label)]);
+    return span(classes: 'tech-badge', [Component.text(label)]);
   }
 
   Component _stackItem(String title, String desc) {
     return div(classes: 'stack-item', [
-      h4([text(title)]),
-      p([text(desc)]),
+      h4([Component.text(title)]),
+      p([Component.text(desc)]),
     ]);
   }
 

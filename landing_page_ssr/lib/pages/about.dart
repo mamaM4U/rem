@@ -1,3 +1,4 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 
 import '../constants/theme.dart';
@@ -10,15 +11,15 @@ class About extends StatelessComponent {
   Component build(BuildContext context) {
     return div(classes: 'about', [
       section(classes: 'about-hero', [
-        h1([text('About Rem')]),
-        p([text('The story behind the workspace and its code-born twins.')]),
+        h1([Component.text('About Rem')]),
+        p([Component.text('The story behind the workspace and its code-born twins.')]),
       ]),
 
       section(classes: 'about-content', [
         div(classes: 'about-card', [
-          h2([text('The Vision')]),
+          h2([Component.text('The Vision')]),
           p([
-            text(
+            Component.text(
               'Rem is a monorepo workspace forged with Melos, designed to unite and orchestrate '
               'multiple Dart/Flutter projects under a single, cohesive structure. '
               'It represents the harmony between frontend and backend development in the Dart ecosystem.',
@@ -27,9 +28,9 @@ class About extends StatelessComponent {
         ]),
 
         div(classes: 'about-card', [
-          h2([text('The Twins')]),
+          h2([Component.text('The Twins')]),
           p([
-            text(
+            Component.text(
               'Arona and Plana are the twin projects that form the core of the Rem workspace. '
               'Like yin and yang, they complement each other perfectly - '
               'Arona handles the bright, user-facing interactions while Plana manages the shadowed, backend operations.',
@@ -38,7 +39,7 @@ class About extends StatelessComponent {
         ]),
 
         div(classes: 'about-card', [
-          h2([text('Technology')]),
+          h2([Component.text('Technology')]),
           div(classes: 'tech-grid', [
             _techItem('Melos', 'Monorepo management'),
             _techItem('Flutter', 'Cross-platform UI'),
@@ -51,23 +52,23 @@ class About extends StatelessComponent {
       ]),
 
       section(classes: 'links-section', [
-        h2([text('Resources')]),
+        h2([Component.text('Resources')]),
         div(classes: 'links-grid', [
           a(href: 'https://github.com/invertase/melos', target: Target.blank, classes: 'link-card', [
-            h3([text('Melos')]),
-            p([text('Monorepo management tool')]),
+            h3([Component.text('Melos')]),
+            p([Component.text('Monorepo management tool')]),
           ]),
           a(href: 'https://flutter.dev', target: Target.blank, classes: 'link-card', [
-            h3([text('Flutter')]),
-            p([text('UI toolkit for any platform')]),
+            h3([Component.text('Flutter')]),
+            p([Component.text('UI toolkit for any platform')]),
           ]),
           a(href: 'https://dartfrog.vgv.dev', target: Target.blank, classes: 'link-card', [
-            h3([text('Dart Frog')]),
-            p([text('Fast Dart backend framework')]),
+            h3([Component.text('Dart Frog')]),
+            p([Component.text('Fast Dart backend framework')]),
           ]),
           a(href: 'https://jaspr.site', target: Target.blank, classes: 'link-card', [
-            h3([text('Jaspr')]),
-            p([text('Dart web framework')]),
+            h3([Component.text('Jaspr')]),
+            p([Component.text('Dart web framework')]),
           ]),
         ]),
       ]),
@@ -76,8 +77,8 @@ class About extends StatelessComponent {
 
   Component _techItem(String name, String desc) {
     return div(classes: 'tech-item', [
-      span(classes: 'tech-name', [text(name)]),
-      span(classes: 'tech-desc', [text(desc)]),
+      span(classes: 'tech-name', [Component.text(name)]),
+      span(classes: 'tech-desc', [Component.text(desc)]),
     ]);
   }
 

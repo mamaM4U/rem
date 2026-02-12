@@ -4,16 +4,16 @@
 // GENERATED FILE, DO NOT MODIFY
 // Generated with jaspr_builder
 
-import 'package:jaspr/jaspr.dart';
 import 'package:arisu/components/header.dart' as prefix0;
 import 'package:arisu/pages/about.dart' as prefix1;
 import 'package:arisu/pages/blog.dart' as prefix2;
 import 'package:arisu/pages/home.dart' as prefix3;
 import 'package:arisu/app.dart' as prefix4;
+import 'package:jaspr/server.dart';
 
 /// Default [JasprOptions] for use with your jaspr project.
 ///
-/// Use this to initialize jaspr **before** calling [runApp].
+//  Use this to initialize jaspr **before** calling [runApp].
 ///
 /// Example:
 /// ```dart
@@ -27,7 +27,7 @@ import 'package:arisu/app.dart' as prefix4;
 ///   runApp(...);
 /// }
 /// ```
-JasprOptions get defaultJasprOptions => JasprOptions(
+ServerOptions get defaultJasprOptions => ServerOptions(
   clients: {
     prefix1.About: ClientTarget<prefix1.About>('pages/about'),
 
