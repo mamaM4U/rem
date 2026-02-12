@@ -2,7 +2,7 @@
 import 'package:envied/envied.dart';
 part 'env_local.g.dart';
 
-@Envied(path: '.envied.local')
+@Envied(path: 'lib/src/app/.envied.local')
 abstract class EnvLocal {
   @EnviedField(obfuscate: true)
   static String API_BASE_URL_EMULATOR = _EnvLocal.API_BASE_URL_EMULATOR;

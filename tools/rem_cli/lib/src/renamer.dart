@@ -79,6 +79,9 @@ class ProjectRenamer {
       await _generateAndroidStudioRunConfigs();
       await _copyEnviedFiles('apps/example_app');
       await _copyEnviedFiles('apps/$_appFolderName');
+
+      // Setup initial shared env to prevent build_runner errors during bootstrap
+      await _setupInitialSharedEnv();
     }
 
     if (config.includePlana) {
@@ -995,6 +998,32 @@ ${appConfigs(aronaConfig.displayName, 'apps/$_appFolderName/lib/main.dart', 'env
 </component>
 ''';
       File(p.join(runDir.path, '${aronaConfig.packageName}_${flavor}_release.run.xml')).writeAsStringSync(releaseConfigXml);
+    }
+  }
+
+  /// Copies example_app env files to shared package to ensure valid state for bootstrap
+  Future<void> _setupInitialSharedEnv() async {
+    print('🔑 Setting up initial shared env from example_app...');
+    final sharedAppDir = p.join(rootPath, 'packages', 'shared', 'lib', 'src', 'app');
+    final sharedEnvDir = p.join(sharedAppDir, 'env');
+    final exampleAppDir = p.join(rootPath, 'apps', 'example_app');
+    final exampleEnvDir = p.join(exampleAppDir, 'env');
+
+    // Copy .envied.* files
+    final flavors = ['local', 'dev', 'prod'];
+    for (final flavor in flavors) {
+      final enviedFile = File(p.join(exampleAppDir, '.envied.$flavor'));
+      if (enviedFile.existsSync()) {
+        enviedFile.copySync(p.join(sharedAppDir, '.envied.$flavor'));
+      }
+    }
+
+    // Copy env/ folder
+    final envDir = Directory(exampleEnvDir);
+    if (envDir.existsSync()) {
+      final sharedEnv = Directory(sharedEnvDir);
+      if (sharedEnv.existsSync()) sharedEnv.deleteSync(recursive: true);
+      await _copyDirectory(envDir, sharedEnv);
     }
   }
 }
