@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:requests_inspector/requests_inspector.dart';
 
+import 'config/app_config.dart';
+import 'config/base_assets.dart';
+import 'config/base_colors.dart';
 import 'constants/routes.dart';
 import 'helpers/utils/device_detector.dart';
 import 'routes/routes.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 
-/// Initialize the app (device detection, API service, auth)
-Future<void> initApp() async {
+/// Initialize the app (device detection, API service, auth, config)
+Future<String> initApp({BaseColors? appColors, BaseAssets? appAssets}) async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize App Config with custom colors and assets if provided
+  AppConfig.instance.init(customColors: appColors, customAssets: appAssets);
+
   // Initialize device detection (must be before ApiService)
   await DeviceDetector.init();
 
@@ -20,6 +28,11 @@ Future<void> initApp() async {
   if (token != null) {
     apiService.setAuthToken(token);
   }
+
+  if (await authService.isAuthenticated()) {
+    return HOME_PAGE.path;
+  }
+  return LOGIN_PAGE.path;
 }
 
 /// Main app widget - wraps GetMaterialApp with RequestsInspector

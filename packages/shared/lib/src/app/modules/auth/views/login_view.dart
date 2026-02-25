@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared/src/app/config/app_config.dart';
 
 import '../controllers/auth_controller.dart';
 
@@ -34,36 +35,22 @@ class LoginView extends GetView<AuthController> {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Colors.blue.withValues(alpha: 0.2),
-                          Colors.purple.withValues(alpha: 0.2),
-                        ],
+                        colors: [Colors.blue.withValues(alpha: 0.2), Colors.purple.withValues(alpha: 0.2)],
                       ),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.lock_outline,
-                      size: 60,
-                      color: Colors.blue,
-                    ),
+                    child: const Icon(Icons.lock_outline, size: 60, color: Colors.blue),
                   ),
                   const SizedBox(height: 32),
                   const Text(
                     'Welcome Back',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black87),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Login to continue your journey',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
@@ -76,20 +63,11 @@ class LoginView extends GetView<AuthController> {
                       prefixIcon: const Icon(Icons.email_outlined),
                       filled: true,
                       fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
-                          width: 2,
-                        ),
+                        borderSide: const BorderSide(color: Colors.blue, width: 2),
                       ),
                     ),
                     validator: (value) {
@@ -112,29 +90,16 @@ class LoginView extends GetView<AuthController> {
                         hintText: 'Enter your password',
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            controller.obscurePassword.value
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
+                          icon: Icon(controller.obscurePassword.value ? Icons.visibility_outlined : Icons.visibility_off_outlined),
                           onPressed: controller.togglePasswordVisibility,
                         ),
                         filled: true,
                         fillColor: Colors.grey[100],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 2,
-                          ),
+                          borderSide: const BorderSide(color: Colors.blue, width: 2),
                         ),
                       ),
                       validator: (value) {
@@ -151,33 +116,19 @@ class LoginView extends GetView<AuthController> {
                   const SizedBox(height: 32),
                   Obx(
                     () => FilledButton(
-                      onPressed: controller.isLoading.value
-                          ? null
-                          : controller.login,
+                      onPressed: controller.isLoading.value ? null : controller.login,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        backgroundColor: AppConfig.colors.primary,
                       ),
                       child: controller.isLoading.value
                           ? const SizedBox(
                               height: 20,
                               width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
                             )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                          : const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(height: 24),

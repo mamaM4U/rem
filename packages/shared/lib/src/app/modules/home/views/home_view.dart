@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared/shared.dart';
 
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
-import '../services/home_service.dart';
+import '../../../services/api_service.dart';
+import '../../../services/auth_service.dart';
+import '../../../services/home_service.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeViewState extends State<HomeView> {
   late final HomeService _homeService;
   late final AuthService _authService;
 
