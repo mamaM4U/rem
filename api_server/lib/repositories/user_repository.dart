@@ -1,7 +1,7 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:plana/database/database.dart';
 import 'package:postgres/postgres.dart';
-import 'package:shared/shared.dart';
+import 'package:shared_models/shared_models.dart';
 import 'package:uuid/uuid.dart';
 
 /// User repository for database operations

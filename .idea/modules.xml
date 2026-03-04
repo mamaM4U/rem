@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<module fileurl="file://$PROJECT_DIR$/app/melos_arona.iml" filepath="$PROJECT_DIR$/app/melos_arona.iml"/>
+<module fileurl="file://$PROJECT_DIR$/landing_page_ssr/melos_arisu.iml" filepath="$PROJECT_DIR$/landing_page_ssr/melos_arisu.iml"/>
+<module fileurl="file://$PROJECT_DIR$/apps/example_app/melos_arona.iml" filepath="$PROJECT_DIR$/apps/example_app/melos_arona.iml"/>
 <module fileurl="file://$PROJECT_DIR$/api_server/melos_plana.iml" filepath="$PROJECT_DIR$/api_server/melos_plana.iml"/>
-<module fileurl="file://$PROJECT_DIR$/packages/shared/melos_shared.iml" filepath="$PROJECT_DIR$/packages/shared/melos_shared.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/shared_app/melos_shared_app.iml" filepath="$PROJECT_DIR$/packages/shared_app/melos_shared_app.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/shared_models/melos_shared_models.iml" filepath="$PROJECT_DIR$/packages/shared_models/melos_shared_models.iml"/>
 <module fileurl="file://$PROJECT_DIR$/melos_rem_workspace.iml" filepath="$PROJECT_DIR$/melos_rem_workspace.iml"/>
+<module fileurl="file://$PROJECT_DIR$/app/melos_arona.iml" filepath="$PROJECT_DIR$/app/melos_arona.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/shared/melos_shared.iml" filepath="$PROJECT_DIR$/packages/shared/melos_shared.iml"/>
     </modules>
   </component>
 </project>

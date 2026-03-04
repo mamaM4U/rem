@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:shared/shared.dart';
+import 'package:shared_models/shared_models.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   if (context.request.method != HttpMethod.get) {

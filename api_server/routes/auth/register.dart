@@ -5,7 +5,7 @@ import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:plana/env/env.dart';
 import 'package:plana/repositories/user_repository.dart';
-import 'package:shared/shared.dart';
+import 'package:shared_models/shared_models.dart';
 import 'package:validators2/validators2.dart';
 
 Future<Response> onRequest(RequestContext context) async {

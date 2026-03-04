@@ -8,7 +8,8 @@ workspace:
   - apps/example_app
   - api_server
   - landing_page_ssr
-  - packages/shared
+  - packages/shared_app
+  - packages/shared_models
 
 dev_dependencies:
   melos: ^7.3.0
