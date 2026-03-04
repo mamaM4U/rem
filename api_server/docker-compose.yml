@@ -1,7 +1,7 @@
+name: plana
 services:
   db:
     image: postgres:15-alpine
-    container_name: plana-db
     volumes:
       - ./data/db:/var/lib/postgresql/data
       - ./database.sql:/docker-entrypoint-initdb.d/init.sql
@@ -14,11 +14,10 @@ services:
     networks:
       - plana-network
 
-  plana:
+  api:
     build:
       context: ..
       dockerfile: api_server/Dockerfile
-    container_name: plana
     depends_on:
       - db
     ports:

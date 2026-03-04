@@ -421,12 +421,10 @@ class ProjectRenamer {
         p.join(rootPath, 'api_server', 'docker-compose.yml');
     if (File(apiDockerComposePath).existsSync()) {
       var dockerContent = File(apiDockerComposePath).readAsStringSync();
-      dockerContent =
-          dockerContent.replaceAll('plana-db', '${planaConfig.packageName}-db');
+      dockerContent = dockerContent.replaceFirst(
+          'name: plana', 'name: ${planaConfig.packageName}');
       dockerContent = dockerContent.replaceAll(
           'plana-network', '${planaConfig.packageName}-network');
-      dockerContent = dockerContent.replaceAll('container_name: plana',
-          'container_name: ${planaConfig.packageName}');
       dockerContent = dockerContent.replaceAll(
           'POSTGRES_DB=rem_db', 'POSTGRES_DB=${planaConfig.databaseName}');
       File(apiDockerComposePath).writeAsStringSync(dockerContent);
