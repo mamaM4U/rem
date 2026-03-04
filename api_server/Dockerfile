@@ -7,8 +7,8 @@ WORKDIR /app
 RUN dart pub global activate dart_frog_cli
 
 # Copy shared package (context is parent directory)
-COPY packages/shared /packages/shared
-WORKDIR /packages/shared
+COPY packages/shared_models /packages/shared_models
+WORKDIR /packages/shared_models
 RUN sed -i '/resolution: workspace/d' pubspec.yaml
 RUN dart pub get
 

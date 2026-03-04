@@ -27,11 +27,13 @@ class ProjectRenamer {
   }
 
   /// Get dart command and args prefix for FVM
-  String get _dartExe => useFvm ? 'fvm' : (Platform.isWindows ? 'dart.bat' : 'dart');
+  String get _dartExe =>
+      useFvm ? 'fvm' : (Platform.isWindows ? 'dart.bat' : 'dart');
   List<String> get _dartPrefix => useFvm ? ['dart'] : [];
 
   /// Get flutter command and args prefix for FVM
-  String get _flutterExe => useFvm ? 'fvm' : (Platform.isWindows ? 'flutter.bat' : 'flutter');
+  String get _flutterExe =>
+      useFvm ? 'fvm' : (Platform.isWindows ? 'flutter.bat' : 'flutter');
   List<String> get _flutterPrefix => useFvm ? ['flutter'] : [];
 
   /// Get melos command (melos doesn't need fvm prefix, it uses project's SDK)
@@ -102,11 +104,13 @@ class ProjectRenamer {
     print('Next steps:');
     var step = 1;
     if (config.includeArona) {
-      print('  $step. Edit ${cyan('apps/$_appFolderName/.envied.*')} with your API URLs');
+      print(
+          '  $step. Edit ${cyan('apps/$_appFolderName/.envied.*')} with your API URLs');
       step++;
     }
     if (config.includePlana) {
-      print('  $step. Edit ${cyan('api_server/.envied')} with your database config');
+      print(
+          '  $step. Edit ${cyan('api_server/.envied')} with your database config');
       step++;
     }
     print('  $step. Regenerate env after editing .envied files:');
@@ -121,7 +125,8 @@ class ProjectRenamer {
     final pubspecPath = p.join(rootPath, 'pubspec.yaml');
     var content = File(pubspecPath).readAsStringSync();
 
-    content = content.replaceAll('name: rem_workspace', 'name: ${config.workspaceName}_workspace');
+    content = content.replaceAll(
+        'name: rem_workspace', 'name: ${config.workspaceName}_workspace');
     content = content.replaceAll('name: rem', 'name: ${config.workspaceName}');
 
     final workspaceLines = <String>[];
@@ -132,9 +137,11 @@ class ProjectRenamer {
     }
     if (config.includePlana) workspaceLines.add('  - api_server');
     if (config.includeArisu) workspaceLines.add('  - landing_page_ssr');
-    workspaceLines.add('  - packages/shared');
+    workspaceLines.add('  - packages/shared_app');
+    workspaceLines.add('  - packages/shared_models');
 
-    content = content.replaceAllMapped(RegExp(r'workspace:\n(  - [^\n]+\n)+'), (match) => '${workspaceLines.join('\n')}\n');
+    content = content.replaceAllMapped(RegExp(r'workspace:\n(  - [^\n]+\n)+'),
+        (match) => '${workspaceLines.join('\n')}\n');
 
     File(pubspecPath).writeAsStringSync(content);
   }
@@ -161,7 +168,8 @@ class ProjectRenamer {
       return;
     }
 
-    print('📁 Creating app from example: apps/example_app → apps/$_appFolderName');
+    print(
+        '📁 Creating app from example: apps/example_app → apps/$_appFolderName');
     await _copyDirectory(Directory(examplePath), Directory(newPath));
   }
 
@@ -189,13 +197,16 @@ class ProjectRenamer {
 
     // Update scopes
     if (config.includeArona && config.aronaConfig != null) {
-      content = content.replaceAll('scope: arona', 'scope: ${config.aronaConfig!.packageName}');
+      content = content.replaceAll(
+          'scope: arona', 'scope: ${config.aronaConfig!.packageName}');
     }
     if (config.includePlana && config.planaConfig != null) {
-      content = content.replaceAll('scope: plana', 'scope: ${config.planaConfig!.packageName}');
+      content = content.replaceAll(
+          'scope: plana', 'scope: ${config.planaConfig!.packageName}');
     }
     if (config.includeArisu && config.arisuConfig != null) {
-      content = content.replaceAll('scope: arisu', 'scope: ${config.arisuConfig!.packageName}');
+      content = content.replaceAll(
+          'scope: arisu', 'scope: ${config.arisuConfig!.packageName}');
     }
 
     // Add build:env scripts for each app
@@ -204,24 +215,25 @@ class ProjectRenamer {
     # Generate env for example_app
     build:env:example_app:
       run: |
-        cp apps/example_app/.envied.* packages/shared/lib/src/app/
-        cp -r apps/example_app/env/ packages/shared/lib/src/app/env/
-        melos exec --scope="shared" -- dart run build_runner build --delete-conflicting-outputs
-        cp packages/shared/lib/src/app/env/env_*.g.dart apps/example_app/env/
+        cp apps/example_app/.envied.* packages/shared_app/lib/src/
+        cp -r apps/example_app/env/ packages/shared_app/lib/src/env/
+        melos exec --scope="shared_app" -- dart run build_runner build --delete-conflicting-outputs
+        cp packages/shared_app/lib/src/env/env_*.g.dart apps/example_app/env/
       description: Generate env files for example_app
 
     # Generate env for $_appFolderName
     build:env:$_appFolderName:
       run: |
-        cp apps/$_appFolderName/.envied.* packages/shared/lib/src/app/
-        cp -r apps/$_appFolderName/env/ packages/shared/lib/src/app/env/
-        melos exec --scope="shared" -- dart run build_runner build --delete-conflicting-outputs
-        cp packages/shared/lib/src/app/env/env_*.g.dart apps/$_appFolderName/env/
+        cp apps/$_appFolderName/.envied.* packages/shared_app/lib/src/
+        cp -r apps/$_appFolderName/env/ packages/shared_app/lib/src/env/
+        melos exec --scope="shared_app" -- dart run build_runner build --delete-conflicting-outputs
+        cp packages/shared_app/lib/src/env/env_*.g.dart apps/$_appFolderName/env/
       description: Generate env files for $_appFolderName
 ''';
       // Insert before the last scripts key or append to scripts
       if (content.contains('scripts:')) {
-        content = content.replaceFirst('scripts:', 'scripts:\n$buildEnvScripts');
+        content =
+            content.replaceFirst('scripts:', 'scripts:\n$buildEnvScripts');
       }
     }
 
@@ -250,14 +262,17 @@ class ProjectRenamer {
       final trimmed = line.trimLeft();
       final currentIndent = line.length - trimmed.length;
 
-      if (trimmed.startsWith('$scriptPrefix:') || trimmed.startsWith('$scriptPrefix:')) {
+      if (trimmed.startsWith('$scriptPrefix:') ||
+          trimmed.startsWith('$scriptPrefix:')) {
         skipUntilNextScript = true;
         indentLevel = currentIndent;
         continue;
       }
 
       if (skipUntilNextScript) {
-        if (trimmed.isNotEmpty && currentIndent <= indentLevel && !line.startsWith(' ' * (indentLevel + 1))) {
+        if (trimmed.isNotEmpty &&
+            currentIndent <= indentLevel &&
+            !line.startsWith(' ' * (indentLevel + 1))) {
           skipUntilNextScript = false;
           result.add(line);
         }
@@ -277,31 +292,40 @@ class ProjectRenamer {
 
     final appPubspecPath = p.join(_appPath, 'pubspec.yaml');
     var content = File(appPubspecPath).readAsStringSync();
-    content = content.replaceFirst('name: arona', 'name: ${aronaConfig.packageName}');
+    content =
+        content.replaceFirst('name: arona', 'name: ${aronaConfig.packageName}');
     File(appPubspecPath).writeAsStringSync(content);
 
     // Update imports in all Dart files
-    await _replaceInDartFiles(_appPath, "import 'package:arona/", "import 'package:${aronaConfig.packageName}/");
+    await _replaceInDartFiles(_appPath, "import 'package:arona/",
+        "import 'package:${aronaConfig.packageName}/");
 
     final buildGradlePath = p.join(_appPath, 'android', 'app', 'build.gradle');
     var gradleContent = File(buildGradlePath).readAsStringSync();
-    gradleContent = gradleContent.replaceAll('com.arona.app', aronaConfig.bundleIdBase);
+    gradleContent =
+        gradleContent.replaceAll('com.arona.app', aronaConfig.bundleIdBase);
     File(buildGradlePath).writeAsStringSync(gradleContent);
 
-    final manifestPath = p.join(_appPath, 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+    final manifestPath = p.join(
+        _appPath, 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
     var manifestContent = File(manifestPath).readAsStringSync();
-    manifestContent = manifestContent.replaceAll('android:label="Arona"', 'android:label="${aronaConfig.displayName}"');
+    manifestContent = manifestContent.replaceAll(
+        'android:label="Arona"', 'android:label="${aronaConfig.displayName}"');
     File(manifestPath).writeAsStringSync(manifestContent);
 
-    final pbxprojPath = p.join(_appPath, 'ios', 'Runner.xcodeproj', 'project.pbxproj');
+    final pbxprojPath =
+        p.join(_appPath, 'ios', 'Runner.xcodeproj', 'project.pbxproj');
     var pbxContent = File(pbxprojPath).readAsStringSync();
-    pbxContent = pbxContent.replaceAll('com.arona.app', aronaConfig.bundleIdBase);
+    pbxContent =
+        pbxContent.replaceAll('com.arona.app', aronaConfig.bundleIdBase);
     File(pbxprojPath).writeAsStringSync(pbxContent);
 
     final infoPlistPath = p.join(_appPath, 'ios', 'Runner', 'Info.plist');
     var plistContent = File(infoPlistPath).readAsStringSync();
-    plistContent = plistContent.replaceAll('<string>Arona</string>', '<string>${aronaConfig.displayName}</string>');
-    plistContent = plistContent.replaceAll('<string>arona</string>', '<string>${aronaConfig.packageName}</string>');
+    plistContent = plistContent.replaceAll('<string>Arona</string>',
+        '<string>${aronaConfig.displayName}</string>');
+    plistContent = plistContent.replaceAll('<string>arona</string>',
+        '<string>${aronaConfig.packageName}</string>');
     File(infoPlistPath).writeAsStringSync(plistContent);
 
     await _renameKotlinPackage(aronaConfig.bundleIdBase);
@@ -321,10 +345,13 @@ class ProjectRenamer {
     final indexPath = p.join(_appPath, 'web', 'index.html');
     if (File(indexPath).existsSync()) {
       var indexContent = File(indexPath).readAsStringSync();
-      indexContent = indexContent.replaceAll('<title>arona</title>', '<title>${aronaConfig.displayName}</title>');
       indexContent = indexContent.replaceAll(
-          'apple-mobile-web-app-title" content="arona"', 'apple-mobile-web-app-title" content="${aronaConfig.displayName}"');
-      indexContent = indexContent.replaceAll('content="A new Flutter project."', 'content="${aronaConfig.displayName}"');
+          '<title>arona</title>', '<title>${aronaConfig.displayName}</title>');
+      indexContent = indexContent.replaceAll(
+          'apple-mobile-web-app-title" content="arona"',
+          'apple-mobile-web-app-title" content="${aronaConfig.displayName}"');
+      indexContent = indexContent.replaceAll('content="A new Flutter project."',
+          'content="${aronaConfig.displayName}"');
       File(indexPath).writeAsStringSync(indexContent);
     }
 
@@ -332,29 +359,44 @@ class ProjectRenamer {
     final manifestPath = p.join(_appPath, 'web', 'manifest.json');
     if (File(manifestPath).existsSync()) {
       var manifestContent = File(manifestPath).readAsStringSync();
-      manifestContent = manifestContent.replaceAll('"name": "arona"', '"name": "${aronaConfig.displayName}"');
-      manifestContent = manifestContent.replaceAll('"short_name": "arona"', '"short_name": "${aronaConfig.displayName}"');
-      manifestContent =
-          manifestContent.replaceAll('"description": "A new Flutter project."', '"description": "${aronaConfig.displayName}"');
+      manifestContent = manifestContent.replaceAll(
+          '"name": "arona"', '"name": "${aronaConfig.displayName}"');
+      manifestContent = manifestContent.replaceAll('"short_name": "arona"',
+          '"short_name": "${aronaConfig.displayName}"');
+      manifestContent = manifestContent.replaceAll(
+          '"description": "A new Flutter project."',
+          '"description": "${aronaConfig.displayName}"');
       File(manifestPath).writeAsStringSync(manifestContent);
     }
   }
 
   Future<void> _renameKotlinPackage(String newPackage) async {
-    final oldKotlinPath = p.join(_appPath, 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example', 'mercenary');
+    final oldKotlinPath = p.join(_appPath, 'android', 'app', 'src', 'main',
+        'kotlin', 'com', 'example', 'mercenary');
     final mainActivityPath = p.join(oldKotlinPath, 'MainActivity.kt');
 
     if (File(mainActivityPath).existsSync()) {
       var content = File(mainActivityPath).readAsStringSync();
-      content = content.replaceFirst(RegExp(r'package [^\n]+'), 'package $newPackage');
+      content = content.replaceFirst(
+          RegExp(r'package [^\n]+'), 'package $newPackage');
 
       final packageParts = newPackage.split('.');
-      final newKotlinPath = p.joinAll([_appPath, 'android', 'app', 'src', 'main', 'kotlin', ...packageParts]);
+      final newKotlinPath = p.joinAll([
+        _appPath,
+        'android',
+        'app',
+        'src',
+        'main',
+        'kotlin',
+        ...packageParts
+      ]);
 
       Directory(newKotlinPath).createSync(recursive: true);
       File(p.join(newKotlinPath, 'MainActivity.kt')).writeAsStringSync(content);
 
-      Directory(p.join(_appPath, 'android', 'app', 'src', 'main', 'kotlin', 'com', 'example')).deleteSync(recursive: true);
+      Directory(p.join(_appPath, 'android', 'app', 'src', 'main', 'kotlin',
+              'com', 'example'))
+          .deleteSync(recursive: true);
     }
   }
 
@@ -365,19 +407,28 @@ class ProjectRenamer {
 
     final apiPubspecPath = p.join(rootPath, 'api_server', 'pubspec.yaml');
     var content = File(apiPubspecPath).readAsStringSync();
-    content = content.replaceFirst('name: plana', 'name: ${planaConfig.packageName}');
+    content =
+        content.replaceFirst('name: plana', 'name: ${planaConfig.packageName}');
     File(apiPubspecPath).writeAsStringSync(content);
 
     // Update imports in all Dart files
-    await _replaceInDartFiles(p.join(rootPath, 'api_server'), "import 'package:plana/", "import 'package:${planaConfig.packageName}/");
+    await _replaceInDartFiles(
+        p.join(rootPath, 'api_server'),
+        "import 'package:plana/",
+        "import 'package:${planaConfig.packageName}/");
 
-    final apiDockerComposePath = p.join(rootPath, 'api_server', 'docker-compose.yml');
+    final apiDockerComposePath =
+        p.join(rootPath, 'api_server', 'docker-compose.yml');
     if (File(apiDockerComposePath).existsSync()) {
       var dockerContent = File(apiDockerComposePath).readAsStringSync();
-      dockerContent = dockerContent.replaceAll('plana-db', '${planaConfig.packageName}-db');
-      dockerContent = dockerContent.replaceAll('plana-network', '${planaConfig.packageName}-network');
-      dockerContent = dockerContent.replaceAll('container_name: plana', 'container_name: ${planaConfig.packageName}');
-      dockerContent = dockerContent.replaceAll('POSTGRES_DB=rem_db', 'POSTGRES_DB=${planaConfig.databaseName}');
+      dockerContent =
+          dockerContent.replaceAll('plana-db', '${planaConfig.packageName}-db');
+      dockerContent = dockerContent.replaceAll(
+          'plana-network', '${planaConfig.packageName}-network');
+      dockerContent = dockerContent.replaceAll('container_name: plana',
+          'container_name: ${planaConfig.packageName}');
+      dockerContent = dockerContent.replaceAll(
+          'POSTGRES_DB=rem_db', 'POSTGRES_DB=${planaConfig.databaseName}');
       File(apiDockerComposePath).writeAsStringSync(dockerContent);
     }
 
@@ -385,7 +436,8 @@ class ProjectRenamer {
     final enviedExamplePath = p.join(rootPath, 'api_server', '.envied.example');
     if (File(enviedExamplePath).existsSync()) {
       var envContent = File(enviedExamplePath).readAsStringSync();
-      envContent = envContent.replaceAll('DATABASE_NAME=rem_db', 'DATABASE_NAME=${planaConfig.databaseName}');
+      envContent = envContent.replaceAll(
+          'DATABASE_NAME=rem_db', 'DATABASE_NAME=${planaConfig.databaseName}');
       File(enviedExamplePath).writeAsStringSync(envContent);
     }
   }
@@ -395,9 +447,11 @@ class ProjectRenamer {
 
     final arisuConfig = config.arisuConfig!;
 
-    final landingPubspecPath = p.join(rootPath, 'landing_page_ssr', 'pubspec.yaml');
+    final landingPubspecPath =
+        p.join(rootPath, 'landing_page_ssr', 'pubspec.yaml');
     var content = File(landingPubspecPath).readAsStringSync();
-    content = content.replaceFirst('name: arisu', 'name: ${arisuConfig.packageName}');
+    content =
+        content.replaceFirst('name: arisu', 'name: ${arisuConfig.packageName}');
     File(landingPubspecPath).writeAsStringSync(content);
 
     // Update imports in all Dart files
@@ -408,7 +462,8 @@ class ProjectRenamer {
     );
   }
 
-  Future<void> _replaceInDartFiles(String directory, String oldImport, String newImport) async {
+  Future<void> _replaceInDartFiles(
+      String directory, String oldImport, String newImport) async {
     final dir = Directory(directory);
     if (!dir.existsSync()) {
       print('   ⚠️  Directory not found: $directory');
@@ -439,7 +494,8 @@ class ProjectRenamer {
 
     var content = File(dockerComposePath).readAsStringSync();
 
-    final dbName = config.planaConfig?.databaseName ?? '${config.workspaceName}_db';
+    final dbName =
+        config.planaConfig?.databaseName ?? '${config.workspaceName}_db';
 
     // Add stack name at the top if not present
     if (!content.startsWith('name:')) {
@@ -447,11 +503,13 @@ class ProjectRenamer {
     }
 
     content = content.replaceAll('rem-db', '${config.workspaceName}-db');
-    content = content.replaceAll('rem-network', '${config.workspaceName}-network');
+    content =
+        content.replaceAll('rem-network', '${config.workspaceName}-network');
     content = content.replaceAll('rem-plana', '${config.workspaceName}-api');
     content = content.replaceAll('rem-arisu', '${config.workspaceName}-web');
     content = content.replaceAll('POSTGRES_DB=rem_db', 'POSTGRES_DB=$dbName');
-    content = content.replaceAll('DATABASE_NAME=rem_db', 'DATABASE_NAME=$dbName');
+    content =
+        content.replaceAll('DATABASE_NAME=rem_db', 'DATABASE_NAME=$dbName');
 
     if (!config.includePlana) {
       content = _removeDockerService(content, 'plana');
@@ -472,8 +530,10 @@ class ProjectRenamer {
     // Check if docker is available and running
     final dockerCheck = await Process.run('docker', ['info'], runInShell: true);
     if (dockerCheck.exitCode != 0) {
-      print('${yellow('⚠️  Docker is not running or not installed. Skipping network creation.')}');
-      print('   Start Docker and create network manually: docker network create $networkName');
+      print(
+          '${yellow('⚠️  Docker is not running or not installed. Skipping network creation.')}');
+      print(
+          '   Start Docker and create network manually: docker network create $networkName');
       return;
     }
 
@@ -498,7 +558,9 @@ class ProjectRenamer {
 
     // Create the network
     print('🐳 Creating Docker network "$networkName"...');
-    final result = await Process.run('docker', ['network', 'create', networkName], runInShell: true);
+    final result = await Process.run(
+        'docker', ['network', 'create', networkName],
+        runInShell: true);
 
     if (result.exitCode == 0) {
       print('${green('✓')} Docker network "$networkName" created');
@@ -547,11 +609,9 @@ class ProjectRenamer {
       final appDir = Directory(p.join(rootPath, 'apps', 'example_app'));
       if (appDir.existsSync()) appDir.deleteSync(recursive: true);
       // Remove the shared app code
-      final sharedAppDir = Directory(p.join(rootPath, 'packages', 'shared', 'lib', 'src', 'app'));
+      final sharedAppDir =
+          Directory(p.join(rootPath, 'packages', 'shared_app'));
       if (sharedAppDir.existsSync()) sharedAppDir.deleteSync(recursive: true);
-      // Remove the barrel export
-      final appBarrel = File(p.join(rootPath, 'packages', 'shared', 'lib', 'app.dart'));
-      if (appBarrel.existsSync()) appBarrel.deleteSync();
     }
 
     if (!config.includePlana) {
@@ -625,7 +685,8 @@ flavorizr:
       final devDepsMatch = RegExp(r'dev_dependencies:\n').firstMatch(content);
       if (devDepsMatch != null) {
         final insertPos = devDepsMatch.end;
-        content = '${content.substring(0, insertPos)}  flutter_flavorizr: ^2.2.3\n${content.substring(insertPos)}';
+        content =
+            '${content.substring(0, insertPos)}  flutter_flavorizr: ^2.2.3\n${content.substring(insertPos)}';
       }
     }
 
@@ -651,7 +712,8 @@ flavorizr:
     );
     var exitCode = await process.exitCode;
     if (exitCode != 0) {
-      print('${yellow('⚠️  melos bootstrap failed. You may need to run it manually.')}');
+      print(
+          '${yellow('⚠️  melos bootstrap failed. You may need to run it manually.')}');
     } else {
       print('${green('✓')} melos bootstrap completed');
     }
@@ -670,7 +732,8 @@ flavorizr:
       );
       final flavExitCode = await flavProcess.exitCode;
       if (flavExitCode != 0) {
-        print('${yellow('⚠️  flutter_flavorizr failed. You may need to run it manually:')}');
+        print(
+            '${yellow('⚠️  flutter_flavorizr failed. You may need to run it manually:')}');
         print('   cd app && $_dartCmdDisplay run flutter_flavorizr');
       } else {
         print('${green('✓')} flutter_flavorizr completed');
@@ -690,7 +753,8 @@ flavorizr:
     );
     exitCode = await process.exitCode;
     if (exitCode != 0) {
-      print('${yellow('⚠️  build:runner had some issues. This is normal if .envied has placeholder values.')}');
+      print(
+          '${yellow('⚠️  build:runner had some issues. This is normal if .envied has placeholder values.')}');
     } else {
       print('${green('✓')} build:runner completed');
     }
@@ -779,13 +843,16 @@ flavorizr:
 
   Future<String?> _getLanIpAddress() async {
     try {
-      final interfaces = await NetworkInterface.list(type: InternetAddressType.IPv4, includeLinkLocal: false);
+      final interfaces = await NetworkInterface.list(
+          type: InternetAddressType.IPv4, includeLinkLocal: false);
 
       for (final interface in interfaces) {
         for (final addr in interface.addresses) {
           final ip = addr.address;
           // Look for common LAN IP ranges
-          if (ip.startsWith('192.168.') || ip.startsWith('10.') || (ip.startsWith('172.') && _isPrivate172(ip))) {
+          if (ip.startsWith('192.168.') ||
+              ip.startsWith('10.') ||
+              (ip.startsWith('172.') && _isPrivate172(ip))) {
             return ip;
           }
         }
@@ -807,7 +874,8 @@ flavorizr:
 
   /// Generate per-app env: for each app, copy env to shared, build, save .g.dart back
   Future<void> _generateEnvPerApp() async {
-    final sharedAppDir = p.join(rootPath, 'packages', 'shared', 'lib', 'src', 'app');
+    final sharedAppDir =
+        p.join(rootPath, 'packages', 'shared_app', 'lib', 'src');
     final sharedEnvDir = p.join(sharedAppDir, 'env');
     final flavors = ['local', 'dev', 'prod'];
 
@@ -819,7 +887,7 @@ flavorizr:
 
       print('🔑 Generating env for $app...');
 
-      // Copy .envied.* to packages/shared/lib/src/app/
+      // Copy .envied.* to packages/shared_app/lib/src/
       for (final flavor in flavors) {
         final enviedFile = File(p.join(appDir, '.envied.$flavor'));
         if (enviedFile.existsSync()) {
@@ -827,7 +895,7 @@ flavorizr:
         }
       }
 
-      // Copy env/ folder to packages/shared/lib/src/app/env/
+      // Copy env/ folder to packages/shared_app/lib/src/env/
       final envDir = Directory(appEnvDir);
       if (envDir.existsSync()) {
         // Clean shared env dir first
@@ -856,7 +924,8 @@ flavorizr:
         }
         print('✅ env generated for $app');
       } else {
-        print('${yellow('⚠️  build_runner failed for $app, .g.dart files may be missing')}');
+        print(
+            '${yellow('⚠️  build_runner failed for $app, .g.dart files may be missing')}');
       }
     }
 
@@ -893,13 +962,13 @@ flavorizr:
     {
       "label": "env:example_app",
       "type": "shell",
-      "command": "cp apps/example_app/.envied.* packages/shared/lib/src/app/ && cp -r apps/example_app/env/ packages/shared/lib/src/app/env/",
+      "command": "cp apps/example_app/.envied.* packages/shared_app/lib/src/ && cp -r apps/example_app/env/ packages/shared_app/lib/src/env/",
       "presentation": { "reveal": "silent" }
     },
     {
       "label": "env:$_appFolderName",
       "type": "shell",
-      "command": "cp apps/$_appFolderName/.envied.* packages/shared/lib/src/app/ && cp -r apps/$_appFolderName/env/ packages/shared/lib/src/app/env/",
+      "command": "cp apps/$_appFolderName/.envied.* packages/shared_app/lib/src/ && cp -r apps/$_appFolderName/env/ packages/shared_app/lib/src/env/",
       "presentation": { "reveal": "silent" }
     }
   ]
@@ -918,7 +987,13 @@ flavorizr:
       for (final f in flavors) {
         for (final release in [false, true]) {
           final suffix = release ? ' (Release)' : ' (Debug)';
-          final args = ['"--flavor"', '"${f['flavor']}"', '"--dart-define=FLAVOR=${f['flavor']}"', '"--target"', '"lib/main.dart"'];
+          final args = [
+            '"--flavor"',
+            '"${f['flavor']}"',
+            '"--dart-define=FLAVOR=${f['flavor']}"',
+            '"--target"',
+            '"lib/main.dart"'
+          ];
           if (release) args.add('"--release"');
           configs.add('''    {
       "name": "$name ${f['label']}$suffix",
@@ -950,7 +1025,8 @@ ${appConfigs(aronaConfig.displayName, 'apps/$_appFolderName/lib/main.dart', 'env
   "dart.flutterSdkPath": ".fvm/flutter_sdk"
 }
 ''';
-      File(p.join(vscodeDir.path, 'settings.json')).writeAsStringSync(settingsJson);
+      File(p.join(vscodeDir.path, 'settings.json'))
+          .writeAsStringSync(settingsJson);
     }
   }
 
@@ -964,14 +1040,16 @@ ${appConfigs(aronaConfig.displayName, 'apps/$_appFolderName/lib/main.dart', 'env
     }
 
     // Example app (no-flavor) configuration
-    final exampleConfigXml = '''<component name="ProjectRunConfigurationManager">
+    final exampleConfigXml =
+        '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Example App (Debug)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="filePath" value="\$PROJECT_DIR\$/apps/example_app/lib/main.dart" />
     <method v="2" />
   </configuration>
 </component>
 ''';
-    File(p.join(runDir.path, 'example_app_debug.run.xml')).writeAsStringSync(exampleConfigXml);
+    File(p.join(runDir.path, 'example_app_debug.run.xml'))
+        .writeAsStringSync(exampleConfigXml);
 
     // Flavor-specific configurations only (no-flavor configs won't work with flavorizr)
     final flavors = ['local', 'dev', 'prod'];
@@ -986,9 +1064,12 @@ ${appConfigs(aronaConfig.displayName, 'apps/$_appFolderName/lib/main.dart', 'env
   </configuration>
 </component>
 ''';
-      File(p.join(runDir.path, '${aronaConfig.packageName}_${flavor}_debug.run.xml')).writeAsStringSync(configXml);
+      File(p.join(runDir.path,
+              '${aronaConfig.packageName}_${flavor}_debug.run.xml'))
+          .writeAsStringSync(configXml);
 
-      final releaseConfigXml = '''<component name="ProjectRunConfigurationManager">
+      final releaseConfigXml =
+          '''<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="${aronaConfig.displayName} $flavorTitle (Release)" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="buildFlavor" value="$flavor" />
     <option name="additionalArgs" value="--release" />
@@ -997,14 +1078,17 @@ ${appConfigs(aronaConfig.displayName, 'apps/$_appFolderName/lib/main.dart', 'env
   </configuration>
 </component>
 ''';
-      File(p.join(runDir.path, '${aronaConfig.packageName}_${flavor}_release.run.xml')).writeAsStringSync(releaseConfigXml);
+      File(p.join(runDir.path,
+              '${aronaConfig.packageName}_${flavor}_release.run.xml'))
+          .writeAsStringSync(releaseConfigXml);
     }
   }
 
   /// Copies example_app env files to shared package to ensure valid state for bootstrap
   Future<void> _setupInitialSharedEnv() async {
     print('🔑 Setting up initial shared env from example_app...');
-    final sharedAppDir = p.join(rootPath, 'packages', 'shared', 'lib', 'src', 'app');
+    final sharedAppDir =
+        p.join(rootPath, 'packages', 'shared_app', 'lib', 'src');
     final sharedEnvDir = p.join(sharedAppDir, 'env');
     final exampleAppDir = p.join(rootPath, 'apps', 'example_app');
     final exampleEnvDir = p.join(exampleAppDir, 'env');
